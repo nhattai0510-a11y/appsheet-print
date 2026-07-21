@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Phiếu Kiểm Tra Men In / Dung Môi</title>
   <style>
-    /* CSS Định dạng trang in A4 */
     @page {
       size: A4 portrait;
       margin: 10mm;
@@ -25,7 +24,6 @@
       background: #fff;
     }
 
-    /* Thanh công cụ ẩn khi in */
     .no-print {
       background: #f0f0f0;
       padding: 10px;
@@ -45,7 +43,6 @@
       font-weight: bold;
     }
 
-    /* Bảng biểu */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -58,9 +55,7 @@
       vertical-align: middle;
     }
 
-    .header-table td {
-      border: none;
-    }
+    .header-table td { border: none; }
 
     .title {
       font-size: 15pt;
@@ -78,7 +73,6 @@
     .text-bold { font-weight: bold; }
     .no-border { border: none !important; }
 
-    /* Footer cố định */
     .footer-table {
       margin-top: 15px;
       border: none;
@@ -93,7 +87,6 @@
       font-size: 10pt;
     }
 
-    /* Đóng gói ẩn khi in */
     @media print {
       .no-print { display: none !important; }
       body { padding: 0; }
@@ -102,9 +95,9 @@
 </head>
 <body>
 
-  <!-- Thanh công cụ hỗ trợ xem & in -->
+  <!-- Thanh công cụ -->
   <div class="no-print">
-    <button class="btn" onclick="window.print()">🖨️ In Ngay (Ctrl + P)</button>
+    <button class="btn" type="button" onclick="window.print();">🖨️ In Ngay (Ctrl + P)</button>
     <label style="margin-left: 20px;">
       <input type="radio" name="template" value="phieu" checked onclick="toggleTemplate('phieu')"> Mẫu 1: Phiếu Kiểm Tra
     </label>
@@ -113,7 +106,7 @@
     </label>
   </div>
 
-  <!-- ==================== MẪU 1: PHIẾU KIỂM TRA MEN IN / DUNG MÔI ==================== -->
+  <!-- ==================== MẪU 1: PHIẾU KIỂM TRA ==================== -->
   <div id="phieu-template" class="page">
     <table class="header-table">
       <tr>
@@ -122,7 +115,7 @@
       </tr>
     </table>
 
-    <div style="margin-top: 5px;">Số: <span id="val-so-1">01-2026/CL</span></div>
+    <div style="margin-top: 5px;">Số: <span id="val-so-1">...</span></div>
 
     <div class="section-header">I. MÔ TẢ:</div>
     <div style="padding-left: 10px;">
@@ -226,7 +219,7 @@
     </table>
   </div>
 
-  <!-- ==================== MẪU 2: SỔ TAY KIỂM TRA MEN IN / DUNG MÔI ==================== -->
+  <!-- ==================== MẪU 2: SỔ TAY KIỂM TRA ==================== -->
   <div id="sotay-template" class="page" style="display: none;">
     <table class="header-table">
       <tr>
@@ -235,7 +228,7 @@
       </tr>
     </table>
 
-    <div style="margin-top: 5px;">Số: <span id="val-so-2">01-2026/CL</span></div>
+    <div style="margin-top: 5px;">Số: <span id="val-so-2">...</span></div>
 
     <div class="section-header">I. MÔ TẢ:</div>
     <div style="padding-left: 10px;">
@@ -318,15 +311,23 @@
     </table>
   </div>
 
-  <!-- Script đọc dữ liệu từ URL truyền từ AppSheet -->
+  <!-- SCRIPT ĐỌC DỮ LIỆU TỪ LINK URL -->
   <script>
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param) || '...';
+      for (let [key, value] of urlParams.entries()) {
+        if (key.toLowerCase() === param.toLowerCase()) {
+          try {
+            return decodeURIComponent(value) || '...';
+          } catch(e) {
+            return value || '...';
+          }
+        }
+      }
+      return '...';
     }
 
-    // Tự động gán dữ liệu từ URL vào các thẻ HTML
-    window.onload = function() {
+    function fillData() {
       const stt = getQueryParam('stt');
       const year = getQueryParam('year');
       const mauMen = getQueryParam('mau_men');
@@ -339,47 +340,44 @@
       const loaiMen = getQueryParam('loai_men');
       const nhietDo = getQueryParam('nhiet_do');
       const ten = getQueryParam('ten');
-      const trangThai = getQueryParam('trang_thai') || 'Bột khô, không vón cục, không ướt';
 
       const soPhieu = stt + '-' + year + '/CL';
 
       // Gán Mẫu 1
-      document.getElementById('val-so-1').innerText = soPhieu;
-      document.getElementById('val-mau-men-1').innerText = mauMen;
-      document.getElementById('val-mau-men-1a').innerText = mauMen;
-      document.getElementById('val-mau-men-1b').innerText = mauMen;
-      document.getElementById('val-ky-hieu-1').innerText = kyHieu;
-      document.getElementById('val-ma-so-1').innerText = maSo;
-      document.getElementById('val-so-hd-1').innerText = soHd;
-      document.getElementById('val-ngay-hd-1').innerText = ngayHd;
-      document.getElementById('val-sl-1').innerText = sl;
-      document.getElementById('val-ncc-1').innerText = ncc;
-      document.getElementById('val-loai-men-1a').innerText = loaiMen;
-      document.getElementById('val-loai-men-1b').innerText = loaiMen;
-      document.getElementById('val-nhiet-do-1').innerText = nhietDo;
-      document.getElementById('val-ten-1').innerText = ten;
+      if(document.getElementById('val-so-1')) document.getElementById('val-so-1').innerText = soPhieu;
+      if(document.getElementById('val-mau-men-1')) document.getElementById('val-mau-men-1').innerText = mauMen;
+      if(document.getElementById('val-mau-men-1a')) document.getElementById('val-mau-men-1a').innerText = mauMen;
+      if(document.getElementById('val-mau-men-1b')) document.getElementById('val-mau-men-1b').innerText = mauMen;
+      if(document.getElementById('val-ky-hieu-1')) document.getElementById('val-ky-hieu-1').innerText = kyHieu;
+      if(document.getElementById('val-ma-so-1')) document.getElementById('val-ma-so-1').innerText = maSo;
+      if(document.getElementById('val-so-hd-1')) document.getElementById('val-so-hd-1').innerText = soHd;
+      if(document.getElementById('val-ngay-hd-1')) document.getElementById('val-ngay-hd-1').innerText = ngayHd;
+      if(document.getElementById('val-sl-1')) document.getElementById('val-sl-1').innerText = sl;
+      if(document.getElementById('val-ncc-1')) document.getElementById('val-ncc-1').innerText = ncc;
+      if(document.getElementById('val-loai-men-1a')) document.getElementById('val-loai-men-1a').innerText = loaiMen;
+      if(document.getElementById('val-loai-men-1b')) document.getElementById('val-loai-men-1b').innerText = loaiMen;
+      if(document.getElementById('val-nhiet-do-1')) document.getElementById('val-nhiet-do-1').innerText = nhietDo;
+      if(document.getElementById('val-ten-1')) document.getElementById('val-ten-1').innerText = ten;
 
       // Gán Mẫu 2
-      document.getElementById('val-so-2').innerText = soPhieu;
-      document.getElementById('val-mau-men-2').innerText = mauMen;
-      document.getElementById('val-mau-men-2a').innerText = mauMen;
-      document.getElementById('val-ky-hieu-2').innerText = kyHieu;
-      document.getElementById('val-ma-so-2').innerText = maSo;
-      document.getElementById('val-loai-men-2').innerText = loaiMen;
-      document.getElementById('val-trang-thai-2').innerText = trangThai;
-      document.getElementById('val-ten-2').innerText = ten;
+      if(document.getElementById('val-so-2')) document.getElementById('val-so-2').innerText = soPhieu;
+      if(document.getElementById('val-mau-men-2')) document.getElementById('val-mau-men-2').innerText = mauMen;
+      if(document.getElementById('val-mau-men-2a')) document.getElementById('val-mau-men-2a').innerText = mauMen;
+      if(document.getElementById('val-ky-hieu-2')) document.getElementById('val-ky-hieu-2').innerText = kyHieu;
+      if(document.getElementById('val-ma-so-2')) document.getElementById('val-ma-so-2').innerText = maSo;
+      if(document.getElementById('val-loai-men-2')) document.getElementById('val-loai-men-2').innerText = loaiMen;
+      if(document.getElementById('val-trang-thai-2')) document.getElementById('val-trang-thai-2').innerText = 'Bột khô, không vón cục, không ướt.';
+      if(document.getElementById('val-ten-2')) document.getElementById('val-ten-2').innerText = ten;
+    }
 
-      // Kiểm tra tham số chọn mẫu tự động (VD: ?mode=sotay)
-      if (getQueryParam('mode') === 'sotay') {
-        document.querySelector('input[value="sotay"]').checked = true;
-        toggleTemplate('sotay');
-      }
-
-      // Tự động kích hoạt lệnh in sau 500ms
-      setTimeout(() => {
+    window.addEventListener('DOMContentLoaded', function() {
+      fillData();
+      
+      // Tự động bật lệnh in sau 600ms
+      setTimeout(function() {
         window.print();
-      }, 500);
-    };
+      }, 600);
+    });
 
     function toggleTemplate(type) {
       if (type === 'phieu') {
