@@ -130,22 +130,41 @@
       .no-print { display: none !important; }
       body { padding: 0; }
     }
+    /* Đảm bảo viền nét và rõ ràng khi in ra giấy */
+      table.header-table, table.data-table, .header-table td, table.data-table td {
+        border-color: #7c7a7a !important; /* Ép viền về màu đen nguyên bản khi in */
+      }
+    
+    /* Ép trình duyệt ngắt sang trang mới sau Mẫu 1 */
+    .page-break {
+      page-break-after: always;
+      break-after: page;
+    }
+
+    /* Hiển thị cả 2 mẫu cùng lúc trên giao diện in */
+    .print-mode .page {
+      display: block !important;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Thanh công cụ -->
+  <!-- Thanh công cụ tùy chọn in -->
   <div class="no-print">
-    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (hoặc bấm Ctrl + P)</button>
-    <label style="margin-left: 20px;">
-      <input type="radio" name="template" value="phieu" checked onclick="toggleTemplate('phieu')"> Page 1: Phiếu Kiểm Tra
+    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (Ctrl + P)</button>
+    <span style="margin-left: 20px; font-weight: bold;">Chế độ in:</span>
+    <label style="margin-left: 10px;">
+      <input type="radio" name="printOption" value="both" checked onclick="changePrintMode('both')"> 📄📄 In cả 2 Page (2 Mặt)
     </label>
     <label style="margin-left: 10px;">
-      <input type="radio" name="template" value="sotay" onclick="toggleTemplate('sotay')"> Page 2: Sổ Tay Kiểm Tra
+      <input type="radio" name="printOption" value="phieu" onclick="changePrintMode('phieu')"> 📄 Chỉ in Page 1
+    </label>
+    <label style="margin-left: 10px;">
+      <input type="radio" name="printOption" value="sotay" onclick="changePrintMode('sotay')"> 📄 Chỉ in Page 2
     </label>
   </div>
 
-  <!-- ==================== PAGE 1: PHIẾU KIỂM TRA MEN CAO ==================== -->
+  <!-- ==================== MẪU 1: PHIẾU KIỂM TRA MEN CAO ==================== -->
   <div id="phieu-template" class="page">
     <table class="header-table">
       <tr>
@@ -232,7 +251,7 @@
     </table>
 
     <div class="section-header" style="margin-top: 10px;">
-      III. Kết luận: &nbsp;&nbsp;&nbsp;&nbsp; ☑ Đạt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ☐ Không đạt
+      III. Kết luận: &nbsp;&nbsp;&nbsp;&nbsp; ☐ Đạt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ☐ Không đạt
     </div>
 
     <div class="section-header" style="margin-top: 5px;">
@@ -261,9 +280,11 @@
       </tr>
     </table>
   </div>
+  <!-- THẺ ÉP SANG TRANG MỚI / MẶT SAU -->
+  <div class="page-break"></div>
 
-  <!-- ==================== PAGE 2: SỔ TAY KIỂM TRA MEN CAO ==================== -->
-  <div id="sotay-template" class="page" style="display: none;">
+  <!-- ==================== MẪU 2: SỔ TAY KIỂM TRA MEN CAO ==================== -->
+  <div id="sotay-template" class="page">
     <table class="header-table">
       <tr>
         <td class="header-logo">
@@ -332,7 +353,7 @@
     </table>
 
     <div class="section-header" style="margin-top: 15px;">
-      Kết luận: &nbsp;&nbsp;&nbsp;&nbsp; ☑ Đạt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ☐ Không đạt
+      Kết luận: &nbsp;&nbsp;&nbsp;&nbsp; ☐ Đạt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ☐ Không đạt
     </div>
 
     <table class="footer-table" style="margin-top: 30px;">
@@ -419,28 +440,54 @@
 
     window.addEventListener('DOMContentLoaded', function() {
       fillData();
-      //setTimeout(function() {
-       // triggerPrint();
+     // setTimeout(function() {
+     //   triggerPrint();
      // }, 600);
     });
 
-    //function triggerPrint() {
-     // try {
-      //  window.print();
-   //   } catch (e) {
+   // function triggerPrint() {
+    //  try {
+     //   window.print();
+      //} catch (e) {
      //   alert("Trình duyệt đang chặn cửa sổ in. Bạn vui lòng ấn Ctrl + P để in nhé!");
-  //    }
-  //  }
+    //  }
+   // }
 
-    function toggleTemplate(type) {
-      if (type === 'phieu') {
-        document.getElementById('phieu-template').style.display = 'block';
-        document.getElementById('sotay-template').style.display = 'none';
-      } else {
-        document.getElementById('phieu-template').style.display = 'none';
-        document.getElementById('sotay-template').style.display = 'block';
+    // Hàm gọi lệnh in khi bấm nút "In Ngay"
+    function triggerPrint() {
+      try {
+        window.print();
+      } catch (e) {
+        alert("Trình duyệt đang chặn cửa sổ in. Bạn vui lòng bấm Ctrl + P để in nhé!");
       }
     }
+
+    // Hàm đổi chế độ hiển thị (In 2 mặt / Chỉ Mẫu 1 / Chỉ Mẫu 2)
+    function changePrintMode(mode) {
+      const phieu = document.getElementById('phieu-template');
+      const sotay = document.getElementById('sotay-template');
+      const pageBreak = document.querySelector('.page-break');
+
+      if (mode === 'both') {
+        phieu.style.display = 'block';
+        sotay.style.display = 'block';
+        if (pageBreak) pageBreak.style.display = 'block';
+      } else if (mode === 'phieu') {
+        phieu.style.display = 'block';
+        sotay.style.display = 'none';
+        if (pageBreak) pageBreak.style.display = 'none';
+      } else if (mode === 'sotay') {
+        phieu.style.display = 'none';
+        sotay.style.display = 'block';
+        if (pageBreak) pageBreak.style.display = 'none';
+      }
+    }
+
+    // Tự động điền dữ liệu và khởi tạo chế độ in khi vừa load trang
+    window.addEventListener('DOMContentLoaded', function() {
+      fillData(); // Điền dữ liệu từ URL
+      changePrintMode('both'); // Mặc định mở cả 2 mẫu để ready in 2 mặt
+    })
   </script>
 </body>
 </html>
