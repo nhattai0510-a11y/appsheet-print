@@ -12,7 +12,7 @@
     body {
       font-family: "Times New Roman", Times, serif;
       font-size: 12pt;
-      line-height: 1.2;
+      line-height: 1.3;
       margin: 0;
       padding: 0;
       color: #000;
@@ -65,7 +65,7 @@
 
     .header-table td {
       border: 1px solid #000; /* Đường vạch ngăn giữa Logo và Tiêu đề */
-      padding: 8px 12px;
+      padding: 6px 8px;
       vertical-align: middle;
     }
 
@@ -116,8 +116,17 @@
     }
 
     .doc-info {
-      margin-top: 20px;
+      width: 100%;
+      margin-top: 30px;
       font-size: 10pt;
+      border-top: 1px solid #000; /* Đường kẻ ngang nét mảnh phía trên */
+      padding-top: 5px; /* Khoảng cách giữa đường kẻ và chữ */
+    }
+
+    .doc-info td {
+      border: none !important; /* Xóa viền của các ô bên trong */
+      padding: 2px 0;
+    
     }
 
     @media print {
@@ -141,10 +150,15 @@
 
   <!-- ==================== PAGE 1: PHIẾU KIỂM TRA ==================== -->
   <div id="phieu-template" class="page">
+    <!-- TIÊU ĐỀ MẪU 1 -->
     <table class="header-table">
       <tr>
-        <td style="width: 20%;"><img src="logo.png" alt="LOGO" style="max-width: 100px;" onerror="this.src='https://via.placeholder.com/100x50?text=LOGO'"></td>
-        <td class="title" style="width: 80%;">PHIẾU KIỂM TRA MEN IN / DUNG MÔI</td>
+        <td class="header-logo">
+          <img src="logo.png" alt="HƯNG PHÚ" onerror="this.src='https://via.placeholder.com/100x60?text=H%C6%AFNG+PH%C3%9A'">
+        </td>
+        <td class="header-title">
+          PHIẾU KIỂM TRA MEN IN / DUNG MÔI
+        </td>
       </tr>
     </table>
 
@@ -245,19 +259,24 @@
 
     <table class="doc-info">
       <tr>
-        <td class="no-border">M01/QA-SOP 23</td>
-        <td class="no-border text-center">Lần sửa đổi: 00</td>
-        <td class="no-border" style="text-align: right;">Trang 1/1</td>
+        <td style="width: 33%; text-align: left;">M01/QA-SOP 23</td>
+        <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
+        <td style="width: 33%; text-align: right;">Trang 1/1</td>
       </tr>
     </table>
   </div>
 
   <!-- ==================== PAGE 2: SỔ TAY KIỂM TRA ==================== -->
   <div id="sotay-template" class="page" style="display: none;">
+    <!-- TIÊU ĐỀ MẪU 2 -->
     <table class="header-table">
       <tr>
-        <td style="width: 20%;"><img src="logo.png" alt="LOGO" style="max-width: 100px;" onerror="this.src='https://via.placeholder.com/100x50?text=LOGO'"></td>
-        <td class="title" style="width: 80%;">SỔ TAY KIỂM TRA MEN IN / DUNG MÔI</td>
+        <td class="header-logo">
+          <img src="logo.png" alt="HƯNG PHÚ" onerror="this.src='https://via.placeholder.com/100x60?text=H%C6%AFNG+PH%C3%9A'">
+        </td>
+        <td class="header-title">
+          SỔ TAY KIỂM TRA MEN IN / DUNG MÔI
+        </td>
       </tr>
     </table>
 
@@ -335,11 +354,11 @@
       </tr>
     </table>
 
-    <table class="doc-info" style="margin-top: 40px;">
+    <table class="doc-info">
       <tr>
-        <td class="no-border">M07/QA-SOP 23</td>
-        <td class="no-border text-center">Lần sửa đổi: 00</td>
-        <td class="no-border" style="text-align: right;">Trang 1/1</td>
+        <td style="width: 33%; text-align: left;">M07/QA-SOP 23</td>
+        <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
+        <td style="width: 33%; text-align: right;">Trang 1/1</td>
       </tr>
     </table>
   </div>
