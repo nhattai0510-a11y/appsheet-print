@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Phiếu Kiểm Tra Men In / Dung Môi - Men Cao</title>
+  <title>Phiếu Kiểm Tra Men In / Dung Môi</title>
   <style>
     @page {
       size: A4 portrait;
@@ -19,7 +19,7 @@
     }
 
     .page {
-      width: 99.8%;
+      width: 100%;
       box-sizing: border-box;
       background: #fff;
     }
@@ -43,17 +43,29 @@
       font-weight: bold;
     }
 
-    /* Bảng tiêu đề */
+    table {
+      width: 99.8%;
+      border-collapse: collapse;
+      margin-top: 5px;
+    }
+
+    th, td {
+      border: 0.5px solid #7c7a7a;
+      padding: 5px 6px;
+      vertical-align: middle;
+    }
+
+   /* CSS Khung tiêu đề bao quanh như hình ảnh */
     .header-table {
       width: 99.8%;
       border-collapse: collapse;
-      border: 0.5px solid #7c7a7a;
+      border: 0.5px solid #7c7a7a; /* Khung viền ngoài bao quanh */
       margin-bottom: 10px;
     }
 
     .header-table td {
-      border: 0.5px solid #7c7a7a;
-      padding: 8px 12px;
+      border: 0.5px solid #7c7a7a; /* Đường vạch ngăn giữa Logo và Tiêu đề */
+      padding: 8px 10px;
       vertical-align: middle;
     }
 
@@ -78,17 +90,11 @@
       letter-spacing: 0.5px;
     }
 
-    /* Bảng nội dung */
-    table.data-table {
-      width: 99.8%;
-      border-collapse: collapse;
-      margin-top: 5px;
-    }
-
-    table.data-table th, table.data-table td {
-      border: 0.5px solid #7c7a7a;
-      padding: 5px 6px;
-      vertical-align: middle;
+    .title {
+      font-size: 15pt;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
     }
 
     .section-header {
@@ -98,43 +104,44 @@
 
     .text-center { text-align: center; }
     .text-bold { font-weight: bold; }
+    .no-border { border: none !important; }
 
-    /* Footer & Thông tin tài liệu */
     .footer-table {
-      width: 99.8%;
       margin-top: 15px;
       border: none;
-      border-collapse: collapse;
     }
     .footer-table td {
       border: none;
       text-align: center;
-      vertical-align: top;
     }
 
     .doc-info {
-      width: 100%;
+      width: 99.8%;
       margin-top: 30px;
       font-size: 10pt;
-      border-top: 0.5px solid #7c7a7a;
-      padding-top: 5px;
-      border-collapse: collapse;
+      border-top: 0.5px solid #7c7a7a; /* Đường kẻ ngang nét mảnh phía trên */
+      padding-top: 5px; /* Khoảng cách giữa đường kẻ và chữ */
     }
 
     .doc-info td {
-      border: none !important;
+      border: none !important; /* Xóa viền của các ô bên trong */
       padding: 2px 0;
+    
     }
 
     @media print {
       .no-print { display: none !important; }
-      body { padding: 0; }
-    }
-    /* Đảm bảo viền nét và rõ ràng khi in ra giấy */
+      
+      body { 
+        padding: 0; 
+        margin: 0;
+      }
+
+      /* Đảm bảo viền nét và rõ ràng khi in ra giấy */
       table.header-table, table.data-table, .header-table td, table.data-table td {
         border-color: #7c7a7a !important; /* Ép viền về màu đen nguyên bản khi in */
       }
-    
+    }
     /* Ép trình duyệt ngắt sang trang mới sau Mẫu 1 */
     .page-break {
       page-break-after: always;
@@ -164,8 +171,9 @@
     </label>
   </div>
 
-  <!-- ==================== MẪU 1: PHIẾU KIỂM TRA MEN CAO ==================== -->
+  <!-- ==================== PAGE 1: PHIẾU KIỂM TRA ==================== -->
   <div id="phieu-template" class="page">
+    <!-- TIÊU ĐỀ MẪU 1 -->
     <table class="header-table">
       <tr>
         <td class="header-logo">
@@ -182,7 +190,7 @@
     <div class="section-header">I. MÔ TẢ:</div>
     <div style="padding-left: 10px;">
       - Tên men/dung môi: <b id="val-mau-men-1">...</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ký hiệu: <b id="val-ky-hieu-1">...</b><br>
-      - Mã số men/ dung môi: <span id="val-ma-so-1">...</span><br>
+      - Mã số men/ dung môi: <span id="val-ma-so-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span><br>
       - Hóa đơn số: <span id="val-so-hd-1">...</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ngày: <span id="val-ngay-hd-1">...</span><br>
       - Số lượng: <span id="val-sl-1">...</span> Kg<br>
       - Nhà cung ứng: <span id="val-ncc-1">...</span><br>
@@ -191,10 +199,10 @@
 
     <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
     <div style="font-style: italic; margin-bottom: 5px;">
-      Mẫu in: ống 2<sup>ml</sup>=TQT, in chữ VITAMIN C của VDP. Máy M8 in, t°= 610°C
+      Mẫu in: ống 2ml=TQT, in chữ CAMPHONA của CL. Máy M7 in, t°= 540°C
     </div>
 
-    <table class="data-table">
+    <table>
       <thead>
         <tr class="text-center text-bold">
           <th style="width: 6%;">STT</th>
@@ -236,16 +244,16 @@
         <tr>
           <td class="text-center">5</td>
           <td>Nhiệt độ</td>
-          <td>Cao (<span id="val-nhiet-do-1">...</span>°C)</td>
-          <td>610°C</td>
+          <td>Thấp (<span id="val-nhiet-do-1">...</span>°C)</td>
+          <td>540°C</td>
           <td class="text-center">Đạt</td>
         </tr>
         <tr>
           <td class="text-center">6</td>
           <td>Độ bền màu với acid</td>
-          <td>Ngâm trong dung dịch acid acetic 4% trong 2 giờ: Men in không bị mờ, không bị tróc.</td>
-          <td>Men in không bị mờ, không bị tróc.</td>
-          <td class="text-center">Đạt</td>
+          <td>Ngâm ống trong dung dịch acid acetic 4%: 3 phút chữ in bị mất màu.</td>
+          <td>Mẫu trước khi ngâm: chữ bóng đẹp, cạo không tróc.<br>Sau khi ngâm: chữ in bị mất màu.</td>
+          <td class="text-center">Đạt men thấp</td>
         </tr>
       </tbody>
     </table>
@@ -283,8 +291,9 @@
   <!-- THẺ ÉP SANG TRANG MỚI / MẶT SAU -->
   <div class="page-break"></div>
 
-  <!-- ==================== MẪU 2: SỔ TAY KIỂM TRA MEN CAO ==================== -->
+  <!-- ==================== PAGE 2: SỔ TAY KIỂM TRA ==================== -->
   <div id="sotay-template" class="page">
+    <!-- TIÊU ĐỀ MẪU 2 -->
     <table class="header-table">
       <tr>
         <td class="header-logo">
@@ -307,10 +316,10 @@
 
     <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
     <div style="font-style: italic; margin-bottom: 5px;">
-      <b>Mẫu in (máy, nhiệt độ):</b> ống 2<sup>ml</sup>=TQT, in chữ VITAMIN C của VDP. Máy M8 in, t°= 610°C. Ngâm trong dung dịch acid acetic 4% trong 2 giờ: Men in không bị mờ, không bị tróc.
+      <b>Mẫu in (máy, nhiệt độ):</b> ống 2ml=TQT, in chữ CAMPHONA của CL . Máy M7 in, t°= 540°C. Ngâm ống trong dung dịch acid acetic 4%: 3 phút, chữ in mất màu.
     </div>
 
-    <table class="data-table">
+    <table>
       <thead>
         <tr class="text-center text-bold">
           <th style="width: 8%;">STT</th>
@@ -342,12 +351,12 @@
         <tr>
           <td class="text-center">5</td>
           <td>Nhiệt độ</td>
-          <td>610°C</td>
+          <td>540°C</td>
         </tr>
         <tr>
           <td class="text-center">6</td>
           <td>Độ bền màu với acid</td>
-          <td>Men in không bị mờ, không bị tróc.</td>
+          <td>Mẫu trước khi ngâm: chữ bóng đẹp, cạo không tróc.<br>Sau khi ngâm: chữ in bị mất màu.</td>
         </tr>
       </tbody>
     </table>
@@ -370,7 +379,7 @@
       </tr>
     </table>
 
-    <table class="doc-info" style="margin-top: 40px;">
+    <table class="doc-info">
       <tr>
         <td style="width: 33%; text-align: left;">M07/QA-SOP 23</td>
         <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
@@ -379,7 +388,7 @@
     </table>
   </div>
 
-  <!-- SCRIPT ĐỌC DỮ LIỆU TỪ URL -->
+  <!-- SCRIPT ĐỌC DỮ LIỆU TỪ LINK URL -->
   <script>
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -440,18 +449,12 @@
 
     window.addEventListener('DOMContentLoaded', function() {
       fillData();
-     // setTimeout(function() {
-     //   triggerPrint();
+      
+      // Tự động bật lệnh in sau 600ms
+      // setTimeout(function() {
+      //  window.print();
      // }, 600);
-    });
-
-   // function triggerPrint() {
-    //  try {
-     //   window.print();
-      //} catch (e) {
-     //   alert("Trình duyệt đang chặn cửa sổ in. Bạn vui lòng ấn Ctrl + P để in nhé!");
-    //  }
-   // }
+   });
 
     // Hàm gọi lệnh in khi bấm nút "In Ngay"
     function triggerPrint() {
@@ -487,7 +490,8 @@
     window.addEventListener('DOMContentLoaded', function() {
       fillData(); // Điền dữ liệu từ URL
       changePrintMode('both'); // Mặc định mở cả 2 mẫu để ready in 2 mặt
-    })
+    });
+    
   </script>
 </body>
 </html>
