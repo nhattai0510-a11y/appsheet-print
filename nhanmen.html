@@ -242,20 +242,36 @@
       `;
     }
 
+    // Hàm hỗ trợ tự động đảo MM/DD/YYYY thành DD/MM/YYYY
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr === '...') return '...';
+      
+      // Nếu chuỗi có dạng MM/DD/YYYY (VD: 07/13/2026)
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        const month = parts[0].padStart(2, '0');
+        const day = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${day}/${month}/${year}`; // Đảo lại thành Ngày/Tháng/Năm (13/07/2026)
+      }
+      return dateStr;
+    }
+
     function renderLabels() {
+      const rawNgayKiem = getQueryParam('ngay_kiem');
+
       const data = {
         mauMen: getQueryParam('mau_men'),
         nhietDo: getQueryParam('nhiet_do'),
         kyHieu: getQueryParam('ky_hieu'),
         maSo: getQueryParam('ma_so'),
         nuocSx: getQueryParam('nuoc_sx'),
-        ngayKiem: getQueryParam('ngay_kiem')
+        ngayKiem: formatDate(rawNgayKiem) // <--- ĐÃ ĐƯỢC CHUYỂN THÀNH DD/MM/YYYY
       };
 
       const gridContainer = document.querySelector('.labels-grid');
       let fullGridHtml = '';
 
-      // TỰ ĐỘNG NHÂN BẢN THÀNH 6 NHÃN (2 CỘT x 3 HÀNG)
       for (let i = 0; i < 6; i++) {
         fullGridHtml += createSingleLabel(data);
       }
