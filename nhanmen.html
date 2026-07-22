@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Nhãn Men / Dung Môi - Khổ Ngang 6 Nhãn</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    @page {
+      size: A4 landscape; /* Khổ giấy A4 NGANG */
+      margin: 5mm 10mm;   /* Lề căn chỉnh đẹp mắt */
+    }
+
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 11pt;    /* Tăng font chữ to rõ hơn */
+      line-height: 1.2;
+      margin: 0;
+      padding: 0;
+      color: #000;
+      background: #fff;
+    }
+
+    .no-print {
+      background: #f0f0f0;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #ccc;
+      text-align: center;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Bố cục 2 Cột x 3 Hàng = 6 Nhãn / Trang A4 Ngang */
+    .labels-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Chia 2 cột rộng rãi */
+      gap: 25px 25px;                 /* KHOẢNG CÁCH GIỮA CÁC NHÃN */
+      width: 100%;
+    }
+
+    /* Khung từng nhãn đơn */
+    .label-card {
+      border: 0.5px solid #333; /* Đường kẻ viền mảnh */
+      padding: 4px 6px;
+      background: #fff;
+      height: auto;
+    }
+
+    /* Bảng tiêu đề nhãn */
+    .label-header {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 5px;
+    }
+
+    .label-header td {
+      border: 0.5px solid #333;
+      padding: 4px 3px;
+      vertical-align: middle;
+    }
+
+    .logo-cell {
+      width: 25%;
+      text-align: center;
+    }
+
+    .logo-cell img {
+      max-height: 30px;
+      width: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .title-cell {
+      width: 75%;
+      font-weight: bold;
+      font-size: 10.5pt;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    /* Bảng nội dung nhãn */
+    .label-body {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 5px;
+    }
+
+    .label-body td {
+      border: 0.5px solid #333; /* Đường kẻ viền mảnh */
+      padding: 2.5px 5px;
+      vertical-align: middle;
+    }
+
+    /* ĐIỀU CHỈNH KÍCH THƯỚC CỘT THEO YÊU CẦU */
+    .label-body tr td:first-child {
+      width: 38%; /* Cố định Cột 1 vừa đủ chữ */
+      white-space: nowrap;
+    }
+
+    .label-body tr td:last-child {
+      width: 62%; /* Mở rộng Cột 2 để chứa dữ liệu thoải mái */
+      word-break: break-word;
+    }
+
+    .text-bold {
+      font-weight: bold;
+    }
+
+    /* Chân nhãn (Mã tài liệu) */
+    .label-footer {
+      width: 100%;
+      font-size: 8pt;
+      border-top: 0.5px solid #333;
+      padding-top: 3px;
+      border-collapse: collapse;
+    }
+
+    .label-footer td {
+      border: none !important;
+      padding: 0;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 0; }
+      
+      .label-card {
+        border-color: #000 !important;
+      }
+      .label-header td, .label-body td {
+        border-color: #000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Thanh công cụ -->
+  <div class="no-print">
+    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Nhãn (Ctrl + P)</button>
+    <span style="margin-left: 15px; color: #555;">(A4 Ngang: 2 Cột × 3 Hàng = 6 Nhãn to rõ, dễ cắt!)</span>
+  </div>
+
+  <!-- LƯỚI 6 NHÃN KIỂM SOÁT KHỔ NGANG -->
+  <div class="labels-grid">
+    <!-- Code JavaScript sẽ tự động chèn 6 nhãn vào đây -->
+  </div>
+
+  <!-- SCRIPT XỬ LÝ DỮ LIỆU TỪ APPSHEET -->
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      for (let [key, value] of urlParams.entries()) {
+        if (key.toLowerCase() === param.toLowerCase()) {
+          try {
+            return decodeURIComponent(value) || '...';
+          } catch(e) {
+            return value || '...';
+          }
+        }
+      }
+      return '...';
+    }
+
+    // Cấu trúc HTML của 1 chiếc nhãn đơn
+    function createSingleLabel(data) {
+      return `
+        <div class="label-card">
+          <table class="label-header">
+            <tr>
+              <td class="logo-cell">
+                <img src="logo.png" alt="HƯNG PHÚ" onerror="this.src='https://via.placeholder.com/80x35?text=H%C6%AFNG+PH%C3%9A'">
+              </td>
+              <td class="title-cell">
+                THÔNG TIN LÔ MEN / DUNG MÔI
+              </td>
+            </tr>
+          </table>
+
+          <table class="label-body">
+            <tr>
+              <td>Men màu/dung môi:</td>
+              <td><b>${data.mauMen}</b></td>
+            </tr>
+            <tr>
+              <td>Nhiệt độ (°C):</td>
+              <td>${data.nhietDo}</td>
+            </tr>
+            <tr>
+              <td>Ký hiệu:</td>
+              <td class="text-bold">${data.kyHieu}</td>
+            </tr>
+            <tr>
+              <td>Mã số:</td>
+              <td class="text-bold">${data.maSo}</td>
+            </tr>
+            <tr>
+              <td>Nước sản xuất:</td>
+              <td>${data.nuocSx}</td>
+            </tr>
+            <tr>
+              <td>Ngày kiểm tra:</td>
+              <td>${data.ngayKiem}</td>
+            </tr>
+          </table>
+
+          <table class="label-footer">
+            <tr>
+              <td style="width: 35%; text-align: left;">M03/QA-SOP 23</td>
+              <td style="width: 35%; text-align: center;">Lần sửa đổi: 00</td>
+              <td style="width: 30%; text-align: right;">Trang 1/1</td>
+            </tr>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderLabels() {
+      const data = {
+        mauMen: getQueryParam('mau_men'),
+        nhietDo: getQueryParam('nhiet_do'),
+        kyHieu: getQueryParam('ky_hieu'),
+        maSo: getQueryParam('ma_so'),
+        nuocSx: getQueryParam('nuoc_sx'),
+        ngayKiem: getQueryParam('ngay_kiem')
+      };
+
+      const gridContainer = document.querySelector('.labels-grid');
+      let fullGridHtml = '';
+
+      // TỰ ĐỘNG NHÂN BẢN THÀNH 6 NHÃN (2 CỘT x 3 HÀNG)
+      for (let i = 0; i < 6; i++) {
+        fullGridHtml += createSingleLabel(data);
+      }
+
+      gridContainer.innerHTML = fullGridHtml;
+    }
+
+    function triggerPrint() {
+      try {
+        window.print();
+      } catch (e) {
+        alert("Trình duyệt chặn cửa sổ in, bạn vui lòng bấm Ctrl + P để in nhé!");
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      renderLabels();
+    });
+  </script>
+</body>
+</html>
