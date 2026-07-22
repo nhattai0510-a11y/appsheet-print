@@ -19,7 +19,7 @@
     }
 
     .page {
-      width: 100%;
+      width: 99.8%;
       box-sizing: border-box;
       background: #fff;
     }
@@ -28,7 +28,7 @@
       background: #f0f0f0;
       padding: 10px;
       margin-bottom: 20px;
-      border-bottom: 0.5px solid #555 #ccc;
+      border-bottom: 0.5px solid #7c7a7a;
       text-align: center;
     }
 
@@ -45,14 +45,14 @@
 
     /* Bảng tiêu đề */
     .header-table {
-      width: 100%;
+      width: 99.8%;
       border-collapse: collapse;
-      border: 0.5px solid #555;
+      border: 0.5px solid #7c7a7a;
       margin-bottom: 10px;
     }
 
     .header-table td {
-      border: 0.5px solid #555;
+      border: 0.5px solid #7c7a7a;
       padding: 8px 12px;
       vertical-align: middle;
     }
@@ -80,13 +80,13 @@
 
     /* Bảng nội dung */
     table.data-table {
-      width: 100%;
+      width: 99.8%;
       border-collapse: collapse;
       margin-top: 5px;
     }
 
     table.data-table th, table.data-table td {
-      border: 0.5px solid #555;
+      border: 0.5px solid #7c7a7a;
       padding: 5px 6px;
       vertical-align: middle;
     }
@@ -101,7 +101,7 @@
 
     /* Footer & Thông tin tài liệu */
     .footer-table {
-      width: 100%;
+      width: 99.8%;
       margin-top: 15px;
       border: none;
       border-collapse: collapse;
@@ -116,7 +116,7 @@
       width: 100%;
       margin-top: 30px;
       font-size: 10pt;
-      border-top: 0.5px solid #555;
+      border-top: 0.5px solid #7c7a7a;
       padding-top: 5px;
       border-collapse: collapse;
     }
@@ -138,14 +138,14 @@
   <div class="no-print">
     <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (hoặc bấm Ctrl + P)</button>
     <label style="margin-left: 20px;">
-      <input type="radio" name="template" value="phieu" checked onclick="toggleTemplate('phieu')"> Mẫu 1: Phiếu Kiểm Tra
+      <input type="radio" name="template" value="phieu" checked onclick="toggleTemplate('phieu')"> Page 1: Phiếu Kiểm Tra
     </label>
     <label style="margin-left: 10px;">
-      <input type="radio" name="template" value="sotay" onclick="toggleTemplate('sotay')"> Mẫu 2: Sổ Tay Kiểm Tra
+      <input type="radio" name="template" value="sotay" onclick="toggleTemplate('sotay')"> Page 2: Sổ Tay Kiểm Tra
     </label>
   </div>
 
-  <!-- ==================== MẪU 1: PHIẾU KIỂM TRA MEN CAO ==================== -->
+  <!-- ==================== PAGE 1: PHIẾU KIỂM TRA MEN CAO ==================== -->
   <div id="phieu-template" class="page">
     <table class="header-table">
       <tr>
@@ -262,7 +262,7 @@
     </table>
   </div>
 
-  <!-- ==================== MẪU 2: SỔ TAY KIỂM TRA MEN CAO ==================== -->
+  <!-- ==================== PAGE 2: SỔ TAY KIỂM TRA MEN CAO ==================== -->
   <div id="sotay-template" class="page" style="display: none;">
     <table class="header-table">
       <tr>
@@ -390,7 +390,7 @@
 
       const soPhieu = stt + '-' + year + '/CL';
 
-      // Gán Mẫu 1
+      // Gán Page 1
       if(document.getElementById('val-so-1')) document.getElementById('val-so-1').innerText = soPhieu;
       if(document.getElementById('val-mau-men-1')) document.getElementById('val-mau-men-1').innerText = mauMen;
       if(document.getElementById('val-mau-men-1a')) document.getElementById('val-mau-men-1a').innerText = mauMen;
@@ -406,7 +406,7 @@
       if(document.getElementById('val-nhiet-do-1')) document.getElementById('val-nhiet-do-1').innerText = nhietDo;
       if(document.getElementById('val-ten-1')) document.getElementById('val-ten-1').innerText = ten;
 
-      // Gán Mẫu 2
+      // Gán Page 2
       if(document.getElementById('val-so-2')) document.getElementById('val-so-2').innerText = soPhieu;
       if(document.getElementById('val-mau-men-2')) document.getElementById('val-mau-men-2').innerText = mauMen;
       if(document.getElementById('val-mau-men-2a')) document.getElementById('val-mau-men-2a').innerText = mauMen;
@@ -419,18 +419,18 @@
 
     window.addEventListener('DOMContentLoaded', function() {
       fillData();
-      setTimeout(function() {
-        triggerPrint();
-      }, 600);
+      //setTimeout(function() {
+       // triggerPrint();
+     // }, 600);
     });
 
-    function triggerPrint() {
-      try {
-        window.print();
-      } catch (e) {
-        alert("Trình duyệt đang chặn cửa sổ in. Bạn vui lòng ấn Ctrl + P để in nhé!");
-      }
-    }
+    //function triggerPrint() {
+     // try {
+      //  window.print();
+   //   } catch (e) {
+     //   alert("Trình duyệt đang chặn cửa sổ in. Bạn vui lòng ấn Ctrl + P để in nhé!");
+  //    }
+  //  }
 
     function toggleTemplate(type) {
       if (type === 'phieu') {
