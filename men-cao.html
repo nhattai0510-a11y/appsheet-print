@@ -6,7 +6,11 @@
   <style>
     @page {
       size: A4 portrait;
-      margin: 10mm;
+      margin: 8mm 10mm 5mm 10mm; /* Lề dưới giảm xuống 5mm để đẩy sát mép giấy */
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
@@ -19,9 +23,10 @@
     }
 
     .page {
-      width: 99.8%;
+      display: flex;
+      flex-direction: column;
+      min-height: 280mm; /* Chiều cao để Flexbox giãn rộng */
       box-sizing: border-box;
-      background: #fff;
     }
 
     .no-print {
@@ -43,9 +48,21 @@
       font-weight: bold;
     }
 
-    /* Bảng tiêu đề */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 5px;
+    }
+
+    th, td {
+      border: 0.5px solid #7c7a7a;
+      padding: 5px 6px;
+      vertical-align: middle;
+    }
+
+    /* CSS Khung tiêu đề */
     .header-table {
-      width: 99.8%;
+      width: 100%;
       border-collapse: collapse;
       border: 0.5px solid #7c7a7a;
       margin-bottom: 10px;
@@ -53,7 +70,7 @@
 
     .header-table td {
       border: 0.5px solid #7c7a7a;
-      padding: 8px 12px;
+      padding: 8px 10px;
       vertical-align: middle;
     }
 
@@ -78,19 +95,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* Bảng nội dung */
-    table.data-table {
-      width: 99.8%;
-      border-collapse: collapse;
-      margin-top: 5px;
-    }
-
-    table.data-table th, table.data-table td {
-      border: 0.5px solid #7c7a7a;
-      padding: 5px 6px;
-      vertical-align: middle;
-    }
-
     .section-header {
       font-weight: bold;
       margin-top: 8px;
@@ -99,28 +103,25 @@
     .text-center { text-align: center; }
     .text-bold { font-weight: bold; }
 
-    /* Footer & Thông tin tài liệu */
     .footer-table {
-      width: 99.8%;
       margin-top: 15px;
       border: none;
-      border-collapse: collapse;
     }
     .footer-table td {
       border: none;
       text-align: center;
-      vertical-align: top;
     }
 
+    /* CHÂN TRANG ĐƯỢC ĐẨY SÁT ĐÁY BẰNG FLEXBOX */
     .doc-info {
-      width: 99.8%;
-      margin-top: 20px;
+      width: 100%;
+      margin-top: auto !important; /* Tự động bám sát đáy */
       font-size: 10pt;
       border-top: 0.5px solid #7c7a7a;
       padding-top: 2px;
-      border-collapse: collapse;
+      margin-bottom: 0;
     }
-
+    
     .doc-info td {
       border: none !important;
       padding: 2px 0;
@@ -128,22 +129,27 @@
 
     @media print {
       .no-print { display: none !important; }
-      body { padding: 0; }
-    }
-    /* Đảm bảo viền nét và rõ ràng khi in ra giấy */
-      table.header-table, table.data-table, .header-table td, table.data-table td {
-        border-color: #7c7a7a !important; /* Ép viền về màu đen nguyên bản khi in */
+      
+      body { 
+        padding: 0; 
+        margin: 0;
       }
-    
-    /* Ép trình duyệt ngắt sang trang mới sau Mẫu 1 */
-    .page-break {
-      page-break-after: always;
-      break-after: page;
+
+      .page {
+        height: 283mm; /* Tăng chiều cao tối đa cho trang in để chân trang sát mép giấy */
+      }
+
+      table.header-table, table, .header-table td, td, th {
+        border-color: #7c7a7a !important;
+      }
     }
 
-    /* Hiển thị cả 2 mẫu cùng lúc trên giao diện in */
-    .print-mode .page {
-      display: block !important;
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+      height: 0;
+      margin: 0;
+      padding: 0;
     }
   </style>
 </head>
@@ -280,6 +286,7 @@
       </tr>
     </table>
   </div>
+
   <!-- THẺ ÉP SANG TRANG MỚI / MẶT SAU -->
   <div class="page-break"></div>
 
@@ -370,7 +377,8 @@
       </tr>
     </table>
 
-    <table class="doc-info" style="margin-top: 40px;">
+    <!-- ĐÃ XÓA MARGIN-TOP CỐ ĐỊNH 40PX ĐỂ CHÂN TRANG ĐƯỢC TỰ ĐỘNG ĐẨY SÁT ĐÁY -->
+    <table class="doc-info">
       <tr>
         <td style="width: 33%; text-align: left;">M07/QA-SOP 23</td>
         <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
@@ -379,7 +387,7 @@
     </table>
   </div>
 
-  <!-- SCRIPT ĐỌC DỮ LIỆU TỪ URL -->
+  <!-- SCRIPT ĐỌC DỮ LIỆU TỪ URL VÀ ĐỊNH DẠNG NGÀY THÁNG -->
   <script>
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -395,6 +403,19 @@
       return '...';
     }
 
+    // Hàm tự động đảo MM/DD/YYYY thành DD/MM/YYYY chuẩn
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr === '...') return '...';
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        const month = parts[0].padStart(2, '0');
+        const day = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${day}/${month}/${year}`;
+      }
+      return dateStr;
+    }
+
     function fillData() {
       const stt = getQueryParam('stt');
       const year = getQueryParam('year');
@@ -402,7 +423,8 @@
       const kyHieu = getQueryParam('ky_hieu');
       const maSo = getQueryParam('ma_so');
       const soHd = getQueryParam('so_hd');
-      const ngayHd = getQueryParam('ngay_hd');
+      const rawNgayHd = getQueryParam('ngay_hd');
+      const ngayHd = formatDate(rawNgayHd); // Ép kiểu Ngày/Tháng/Năm
       const sl = getQueryParam('sl');
       const ncc = getQueryParam('ncc');
       const loaiMen = getQueryParam('loai_men');
@@ -438,21 +460,6 @@
       if(document.getElementById('val-ten-2')) document.getElementById('val-ten-2').innerText = ten;
     }
 
-    window.addEventListener('DOMContentLoaded', function() {
-      fillData();
-     // setTimeout(function() {
-     //   triggerPrint();
-     // }, 600);
-    });
-
-   // function triggerPrint() {
-    //  try {
-     //   window.print();
-      //} catch (e) {
-     //   alert("Trình duyệt đang chặn cửa sổ in. Bạn vui lòng ấn Ctrl + P để in nhé!");
-    //  }
-   // }
-
     // Hàm gọi lệnh in khi bấm nút "In Ngay"
     function triggerPrint() {
       try {
@@ -462,23 +469,23 @@
       }
     }
 
-    // Hàm đổi chế độ hiển thị (In 2 mặt / Chỉ Mẫu 1 / Chỉ Mẫu 2)
+    // Hàm đổi chế độ hiển thị - GIỮ NGUYÊN KIỂU FLEX HỢP LỆ ĐỂ CHÂN TRANG KHÔNG BỊ TRỎI
     function changePrintMode(mode) {
       const phieu = document.getElementById('phieu-template');
       const sotay = document.getElementById('sotay-template');
       const pageBreak = document.querySelector('.page-break');
 
       if (mode === 'both') {
-        phieu.style.display = 'block';
-        sotay.style.display = 'block';
+        phieu.style.display = 'flex';
+        sotay.style.display = 'flex';
         if (pageBreak) pageBreak.style.display = 'block';
       } else if (mode === 'phieu') {
-        phieu.style.display = 'block';
+        phieu.style.display = 'flex';
         sotay.style.display = 'none';
         if (pageBreak) pageBreak.style.display = 'none';
       } else if (mode === 'sotay') {
         phieu.style.display = 'none';
-        sotay.style.display = 'block';
+        sotay.style.display = 'flex';
         if (pageBreak) pageBreak.style.display = 'none';
       }
     }
@@ -486,8 +493,8 @@
     // Tự động điền dữ liệu và khởi tạo chế độ in khi vừa load trang
     window.addEventListener('DOMContentLoaded', function() {
       fillData(); // Điền dữ liệu từ URL
-      changePrintMode('both'); // Mặc định mở cả 2 mẫu để ready in 2 mặt
-    })
+      changePrintMode('both'); // Mặc định mở cả 2 mẫu để sẵn sàng in 2 mặt
+    });
   </script>
 </body>
 </html>
