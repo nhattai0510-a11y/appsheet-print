@@ -6,7 +6,11 @@
   <style>
     @page {
       size: A4 portrait;
-      margin: 10mm;
+      margin: 8mm 10mm 5mm 10mm; /* Lề dưới giảm xuống 5mm để đẩy sát mép giấy */
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
@@ -19,9 +23,10 @@
     }
 
     .page {
-      width: 100%;
+      display: flex;
+      flex-direction: column;
+      min-height: 280mm; /* Tăng chiều cao để dãn rộng khoang flex */
       box-sizing: border-box;
-      background: #fff;
     }
 
     .no-print {
@@ -44,7 +49,7 @@
     }
 
     table {
-      width: 99.8%;
+      width: 100%;
       border-collapse: collapse;
       margin-top: 5px;
     }
@@ -55,16 +60,16 @@
       vertical-align: middle;
     }
 
-   /* CSS Khung tiêu đề bao quanh như hình ảnh */
+    /* CSS Khung tiêu đề */
     .header-table {
-      width: 99.8%;
+      width: 100%;
       border-collapse: collapse;
-      border: 0.5px solid #7c7a7a; /* Khung viền ngoài bao quanh */
+      border: 0.5px solid #7c7a7a;
       margin-bottom: 10px;
     }
 
     .header-table td {
-      border: 0.5px solid #7c7a7a; /* Đường vạch ngăn giữa Logo và Tiêu đề */
+      border: 0.5px solid #7c7a7a;
       padding: 8px 10px;
       vertical-align: middle;
     }
@@ -90,13 +95,6 @@
       letter-spacing: 0.5px;
     }
 
-    .title {
-      font-size: 15pt;
-      font-weight: bold;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
     .section-header {
       font-weight: bold;
       margin-top: 8px;
@@ -104,7 +102,6 @@
 
     .text-center { text-align: center; }
     .text-bold { font-weight: bold; }
-    .no-border { border: none !important; }
 
     .footer-table {
       margin-top: 15px;
@@ -115,18 +112,19 @@
       text-align: center;
     }
 
+    /* CHÂN TRANG ĐƯỢC ĐẨY SÁT ĐÁY MỆNH LỆNH FLEXBOX */
     .doc-info {
-      width: 99.8%;
-      margin-top: 20px;
+      width: 100%;
+      margin-top: auto; /* Tự động bám sát đáy */
       font-size: 10pt;
-      border-top: 0.5px solid #7c7a7a; /* Đường kẻ ngang nét mảnh phía trên */
-      padding-top: 2px; /* Khoảng cách giữa đường kẻ và chữ */
+      border-top: 0.5px solid #7c7a7a;
+      padding-top: 2px;
+      margin-bottom: 0;
     }
-
-    .doc-info td {
-      border: none !important; /* Xóa viền của các ô bên trong */
-      padding: 2px 0;
     
+    .doc-info td {
+      border: none !important;
+      padding: 2px 0;
     }
 
     @media print {
@@ -137,20 +135,21 @@
         margin: 0;
       }
 
-      /* Đảm bảo viền nét và rõ ràng khi in ra giấy */
-      table.header-table, table.data-table, .header-table td, table.data-table td {
-        border-color: #7c7a7a !important; /* Ép viền về màu đen nguyên bản khi in */
+      .page {
+        height: 283mm; /* Tăng chiều cao tối đa cho trang in để dán chặt chân trang xuống đáy */
+      }
+
+      table.header-table, table, .header-table td, td, th {
+        border-color: #7c7a7a !important;
       }
     }
-    /* Ép trình duyệt ngắt sang trang mới sau Mẫu 1 */
-    .page-break {
-      page-break-after: always;
-      break-after: page;
-    }
 
-    /* Hiển thị cả 2 mẫu cùng lúc trên giao diện in */
-    .print-mode .page {
-      display: block !important;
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+      height: 0;
+      margin: 0;
+      padding: 0;
     }
   </style>
 </head>
@@ -173,7 +172,6 @@
 
   <!-- ==================== PAGE 1: PHIẾU KIỂM TRA ==================== -->
   <div id="phieu-template" class="page">
-    <!-- TIÊU ĐỀ MẪU 1 -->
     <table class="header-table">
       <tr>
         <td class="header-logo">
@@ -288,12 +286,11 @@
       </tr>
     </table>
   </div>
-  <!-- THẺ ÉP SANG TRANG MỚI / MẶT SAU -->
+
   <div class="page-break"></div>
 
   <!-- ==================== PAGE 2: SỔ TAY KIỂM TRA ==================== -->
   <div id="sotay-template" class="page">
-    <!-- TIÊU ĐỀ MẪU 2 -->
     <table class="header-table">
       <tr>
         <td class="header-logo">
@@ -388,7 +385,6 @@
     </table>
   </div>
 
-  <!-- SCRIPT ĐỌC DỮ LIỆU TỪ LINK URL -->
   <script>
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -404,6 +400,19 @@
       return '...';
     }
 
+    // Hàm tự động đảo ngày tháng MM/DD/YYYY thành DD/MM/YYYY
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr === '...') return '...';
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        const month = parts[0].padStart(2, '0');
+        const day = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${day}/${month}/${year}`;
+      }
+      return dateStr;
+    }
+
     function fillData() {
       const stt = getQueryParam('stt');
       const year = getQueryParam('year');
@@ -411,7 +420,8 @@
       const kyHieu = getQueryParam('ky_hieu');
       const maSo = getQueryParam('ma_so');
       const soHd = getQueryParam('so_hd');
-      const ngayHd = getQueryParam('ngay_hd');
+      const rawNgayHd = getQueryParam('ngay_hd');
+      const ngayHd = formatDate(rawNgayHd); // Ép định dạng DD/MM/YYYY
       const sl = getQueryParam('sl');
       const ncc = getQueryParam('ncc');
       const loaiMen = getQueryParam('loai_men');
@@ -447,16 +457,6 @@
       if(document.getElementById('val-ten-2')) document.getElementById('val-ten-2').innerText = ten;
     }
 
-    window.addEventListener('DOMContentLoaded', function() {
-      fillData();
-      
-      // Tự động bật lệnh in sau 600ms
-      // setTimeout(function() {
-      //  window.print();
-     // }, 600);
-   });
-
-    // Hàm gọi lệnh in khi bấm nút "In Ngay"
     function triggerPrint() {
       try {
         window.print();
@@ -465,33 +465,30 @@
       }
     }
 
-    // Hàm đổi chế độ hiển thị (In 2 mặt / Chỉ Mẫu 1 / Chỉ Mẫu 2)
     function changePrintMode(mode) {
       const phieu = document.getElementById('phieu-template');
       const sotay = document.getElementById('sotay-template');
       const pageBreak = document.querySelector('.page-break');
 
       if (mode === 'both') {
-        phieu.style.display = 'block';
-        sotay.style.display = 'block';
+        phieu.style.display = 'flex';
+        sotay.style.display = 'flex';
         if (pageBreak) pageBreak.style.display = 'block';
       } else if (mode === 'phieu') {
-        phieu.style.display = 'block';
+        phieu.style.display = 'flex';
         sotay.style.display = 'none';
         if (pageBreak) pageBreak.style.display = 'none';
       } else if (mode === 'sotay') {
         phieu.style.display = 'none';
-        sotay.style.display = 'block';
+        sotay.style.display = 'flex';
         if (pageBreak) pageBreak.style.display = 'none';
       }
     }
 
-    // Tự động điền dữ liệu và khởi tạo chế độ in khi vừa load trang
     window.addEventListener('DOMContentLoaded', function() {
-      fillData(); // Điền dữ liệu từ URL
-      changePrintMode('both'); // Mặc định mở cả 2 mẫu để ready in 2 mặt
+      fillData();
+      changePrintMode('both');
     });
-    
   </script>
 </body>
 </html>
