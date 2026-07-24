@@ -151,6 +151,19 @@
       margin: 0;
       padding: 0;
     }
+    /* CSS cho bảng thông tin không viền */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 3px;
+      margin-left: 10px;
+    }
+
+    .info-table td {
+      border: none !important; /* Xóa viền bảng */
+      padding: 2px 0;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -186,14 +199,42 @@
     <div style="margin-top: 5px;">Số: <span id="val-so-1">...</span></div>
 
     <div class="section-header">I. MÔ TẢ:</div>
-    <div style="padding-left: 10px;">
-      - Tên men/dung môi: <b id="val-mau-men-1">...</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ký hiệu: <b id="val-ky-hieu-1">...</b><br>
-      - Mã số men/ dung môi: <span id="val-ma-so-1">...</span><br>
-      - Hóa đơn số: <span id="val-so-hd-1">...</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ngày: <span id="val-ngay-hd-1">...</span><br>
-      - Số lượng: <span id="val-sl-1">...</span> Kg<br>
-      - Nhà cung ứng: <span id="val-ncc-1">...</span><br>
-      - Tiêu chuẩn vật liệu (QA-SOP 23)
-    </div>
+<table class="info-table">
+  <tr>
+    <td style="width: 170px;">- Tên men/dung môi</td>
+    <td style="width: 15px;">:</td>
+    <td><b id="val-mau-men-1">...</b></td>
+    <td style="width: 80px;">Ký hiệu</td>
+    <td style="width: 15px;">:</td>
+    <td><b id="val-ky-hieu-1">...</b></td>
+  </tr>
+  <tr>
+    <td>- Mã số men/ dung môi</td>
+    <td>:</td>
+    <td colspan="4"><span id="val-ma-so-1">...</span></td>
+  </tr>
+  <tr>
+    <td>- Hóa đơn số</td>
+    <td>:</td>
+    <td><span id="val-so-hd-1">...</span></td>
+    <td>Ngày</td>
+    <td>:</td>
+    <td><span id="val-ngay-hd-1">...</span></td>
+  </tr>
+  <tr>
+    <td>- Số lượng</td>
+    <td>:</td>
+    <td colspan="4"><span id="val-sl-1">...</span> Kg</td>
+  </tr>
+  <tr>
+    <td>- Nhà cung ứng</td>
+    <td>:</td>
+    <td colspan="4"><span id="val-ncc-1">...</span></td>
+  </tr>
+  <tr>
+    <td colspan="6">- Tiêu chuẩn vật liệu (QA-SOP 23)</td>
+  </tr>
+</table>
 
     <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
     <div style="font-style: italic; margin-bottom: 5px;">
@@ -306,11 +347,24 @@
     <div style="margin-top: 5px;">Số: <span id="val-so-2">...</span></div>
 
     <div class="section-header">I. MÔ TẢ:</div>
-    <div style="padding-left: 10px;">
-      - Tên men/dung môi: <b id="val-mau-men-2">...</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ký hiệu: <b id="val-ky-hieu-2">...</b><br>
-      - Mã số men/ dung môi: <span id="val-ma-so-2">...</span><br>
-      - Tiêu chuẩn vật liệu (QA-SOP 23)
-    </div>
+<table class="info-table">
+  <tr>
+    <td style="width: 170px;">- Tên men/dung môi</td>
+    <td style="width: 15px;">:</td>
+    <td><b id="val-mau-men-2">...</b></td>
+    <td style="width: 80px;">Ký hiệu</td>
+    <td style="width: 15px;">:</td>
+    <td><b id="val-ky-hieu-2">...</b></td>
+  </tr>
+  <tr>
+    <td>- Mã số men/ dung môi</td>
+    <td>:</td>
+    <td colspan="4"><span id="val-ma-so-2">...</span></td>
+  </tr>
+  <tr>
+    <td colspan="6">- Tiêu chuẩn vật liệu (QA-SOP 23)</td>
+  </tr>
+</table>
 
     <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
     <div style="font-style: italic; margin-bottom: 5px;">
