@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Phiếu Kiểm Tra Bao Bì Cấp 2</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 8mm 10mm 5mm 10mm;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 1.2;
+      margin: 0;
+      padding: 0;
+      color: #000;
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      min-height: 280mm;
+      box-sizing: border-box;
+    }
+
+    .no-print {
+      background: #f0f0f0;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-bottom: 0.5px solid #7c7a7a;
+      text-align: center;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 5px;
+    }
+
+    th, td {
+      border: 0.5px solid #7c7a7a;
+      padding: 5px 6px;
+      vertical-align: middle;
+    }
+
+    .header-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 0.5px solid #7c7a7a;
+      margin-bottom: 10px;
+    }
+
+    .header-table td {
+      border: 0.5px solid #7c7a7a;
+      padding: 8px 10px;
+      vertical-align: middle;
+    }
+
+    .header-logo {
+      width: 20%;
+      text-align: center;
+    }
+
+    .header-logo img {
+      max-height: 65px;
+      width: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .header-title {
+      width: 80%;
+      font-size: 16pt;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-header {
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .text-center { text-align: center; }
+    .text-bold { font-weight: bold; }
+
+    .footer-table {
+      margin-top: 15px;
+      border: none;
+    }
+    .footer-table td {
+      border: none;
+      text-align: center;
+    }
+
+    .doc-info {
+      width: 100%;
+      margin-top: auto;
+      font-size: 10pt;
+      border-top: 0.5px solid #7c7a7a;
+      padding-top: 2px;
+      margin-bottom: 0;
+    }
+    
+    .doc-info td {
+      border: none !important;
+      padding: 2px 0;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 0; margin: 0; }
+      .page { height: 283mm; }
+      table.header-table, table, .header-table td, td, th {
+        border-color: #7c7a7a !important;
+      }
+    }
+
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 3px;
+      margin-left: 10px;
+    }
+
+    .info-table td {
+      border: none !important;
+      padding: 2px 0;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="no-print">
+    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (Ctrl + P)</button>
+  </div>
+
+  <div id="phieu-template" class="page">
+    <table class="header-table">
+      <tr>
+        <td class="header-logo">
+          <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/100x60?text=LOGO'">
+        </td>
+        <td class="header-title">
+          PHIẾU KIỂM TRA BAO BÌ
+        </td>
+      </tr>
+    </table>
+
+    <div style="margin-top: 5px;">Số: <span id="val-so">...</span></div>
+
+    <div class="section-header">I. MÔ TẢ:</div>
+    <table class="info-table">
+      <tr>
+        <td style="width: 140px;">- Tên bao bì</td>
+        <td style="width: 15px;">:</td>
+        <td colspan="4"><b id="val-vat-lieu">...</b></td>
+      </tr>
+      <tr>
+        <td>- Hóa đơn số</td>
+        <td>:</td>
+        <td style="width: 200px;"><span id="val-so-hd">...</span></td>
+        <td style="width: 60px;">Ngày</td>
+        <td style="width: 15px;">:</td>
+        <td><span id="val-ngay-hd">...</span></td>
+      </tr>
+      <tr>
+        <td>- Nhà cung ứng</td>
+        <td>:</td>
+        <td colspan="4"><span id="val-ncc">...</span></td>
+      </tr>
+      <tr>
+        <td colspan="6">- Tiêu chuẩn bao bì (QA-SOP 24)</td>
+      </tr>
+    </table>
+
+    <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
+    <div style="font-weight: bold; margin-bottom: 3px;">Bao bì cấp 2</div>
+
+    <table>
+      <thead>
+        <tr class="text-center text-bold">
+          <th style="width: 6%;">STT</th>
+          <th style="width: 20%;">Chỉ tiêu</th>
+          <th style="width: 32%;">Tiêu chuẩn</th>
+          <th style="width: 32%;">Kết quả kiểm tra</th>
+          <th style="width: 10%;">Kết luận</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-center">1</td>
+          <td class="text-bold">Ngoại quan</td>
+          <td>
+            - Đúng thông tin theo hóa đơn<br>
+            - Sạch, không bụi, không có vật lạ.<br>
+            - Mới 100%, chữ in đầy đủ
+          </td>
+          <td>
+            - Thông tin đúng theo hóa đơn của NCC<br>
+            - Bao bì: sạch, không bụi, không có vật lạ.<br>
+            - Hoàn toàn mới 100%, chữ in đầy đủ
+          </td>
+          <td class="text-center" id="val-ket-luan-1">...</td>
+        </tr>
+        <tr>
+          <td class="text-center">2</td>
+          <td class="text-bold">Kích thước</td>
+          <td>- Đúng kích thước theo phụ lục PL01/QA-SOP 24</td>
+          <td><span id="val-kq-kt">...</span></td>
+          <td class="text-center" id="val-ket-luan-2">...</td>
+        </tr>
+        <tr>
+          <td class="text-center">3</td>
+          <td class="text-bold">Độ dai của giấy</td>
+          <td>
+            - Gấp lại giấy không bị gãy.<br>
+            - Các lớp giấy phải kết dính nhau, bề mặt phẳng không gấp nếp, không nhăn.<br>
+            - Kim bấm chắc vừa vặn.
+          </td>
+          <td>
+            - Gập nắp thùng/ cạnh hộp lại, lằn gập không bị gãy.<br>
+            - Các lớp giấy kết dính nhau, bề mặt phẳng không gấp nếp, không nhăn.<br>
+            - Kim bấm chắc vừa vặn.
+          </td>
+          <td class="text-center" id="val-ket-luan-3">...</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-header" style="margin-top: 10px;">
+      III. KẾT LUẬN: &nbsp;&nbsp;&nbsp;&nbsp; ▢ ĐẠT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ▢ KHÔNG ĐẠT
+    </div>
+
+    <div class="section-header" style="margin-top: 5px;">
+      IV. BIỆN PHÁP XỬ LÝ: ……………………………………………………………………………
+    </div>
+
+    <table class="footer-table">
+      <tr>
+        <td style="width: 50%;">
+          <b>KIỂM NGHIỆM VIÊN</b><br><br><br><br>
+          <b id="val-ten">...</b>
+        </td>
+        <td style="width: 50%;">
+          Ngày …… tháng …… năm ……<br>
+          <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
+          <b>Nguyễn Thị Bích Tuyền</b>
+        </td>
+      </tr>
+    </table>
+
+    <table class="doc-info">
+      <tr>
+        <td style="width: 33%; text-align: left;">M01/QA-SOP 24</td>
+        <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
+        <td style="width: 33%; text-align: right;">Trang 1/1</td>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      for (let [key, value] of urlParams.entries()) {
+        if (key.toLowerCase() === param.toLowerCase()) {
+          try {
+            return decodeURIComponent(value) || '...';
+          } catch(e) {
+            return value || '...';
+          }
+        }
+      }
+      return '...';
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr === '...') return '...';
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        const month = parts[0].padStart(2, '0');
+        const day = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${day}/${month}/${year}`;
+      }
+      return dateStr;
+    }
+
+    function fillData() {
+      const stt = getQueryParam('stt');
+      const year = getQueryParam('year');
+      const vatLieu = getQueryParam('vat_lieu');
+      const soHd = getQueryParam('so_hd');
+      const rawNgayHd = getQueryParam('ngay_hd');
+      const ngayHd = formatDate(rawNgayHd);
+      const ncc = getQueryParam('ncc');
+      const kqKt = getQueryParam('kq_kt');
+      const ketLuan = getQueryParam('ket_luan');
+      const ten = getQueryParam('ten');
+
+      const soPhieu = stt + '-' + year + '/CL';
+
+      if(document.getElementById('val-so')) document.getElementById('val-so').innerText = soPhieu;
+      if(document.getElementById('val-vat-lieu')) document.getElementById('val-vat-lieu').innerText = vatLieu;
+      if(document.getElementById('val-so-hd')) document.getElementById('val-so-hd').innerText = soHd;
+      if(document.getElementById('val-ngay-hd')) document.getElementById('val-ngay-hd').innerText = ngayHd;
+      if(document.getElementById('val-ncc')) document.getElementById('val-ncc').innerText = ncc;
+      if(document.getElementById('val-kq-kt')) document.getElementById('val-kq-kt').innerText = kqKt;
+      if(document.getElementById('val-ten')) document.getElementById('val-ten').innerText = ten;
+      
+      if(document.getElementById('val-ket-luan-1')) document.getElementById('val-ket-luan-1').innerText = ketLuan;
+      if(document.getElementById('val-ket-luan-2')) document.getElementById('val-ket-luan-2').innerText = ketLuan;
+      if(document.getElementById('val-ket-luan-3')) document.getElementById('val-ket-luan-3').innerText = ketLuan;
+    }
+
+    function triggerPrint() {
+      try { window.print(); } catch (e) { alert("Vui lòng bấm Ctrl + P để in!"); }
+    }
+
+    window.addEventListener('DOMContentLoaded', fillData);
+  </script>
+</body>
+</html>
