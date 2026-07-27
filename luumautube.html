@@ -125,17 +125,15 @@
       }
       return '...';
     }
-    // Hàm chuyển đổi các chuỗi ngày tháng dạng YYYY-MM-DD hoặc Date object về dd/mm/yyyy
+    // Hàm chuyển đổi ngày về dạng dd/mm/yyyy cho riêng dòng "Ngày lưu mẫu"
     function formatDate(dateString) {
       if (!dateString || dateString === '...') return '...';
       
-      // Nếu chuỗi có dạng YYYY-MM-DD
       if (/^\d{4}-\d{2}-\d{2}/.test(dateString)) {
         const parts = dateString.split('T')[0].split('-');
         return `${parts[2]}/${parts[1]}/${parts[0]}`;
       }
       
-      // Nếu là định dạng thời gian khác, thử parse Date
       const d = new Date(dateString);
       if (!isNaN(d.getTime())) {
         const day = String(d.getDate()).padStart(2, '0');
@@ -144,9 +142,8 @@
         return `${day}/${month}/${year}`;
       }
       
-      return dateString; // Trả về nguyên bản nếu không khớp chuẩn ngày
+      return dateString;
     }
-
     function fillData() {
       const stt = getQueryParam('stt');
       const year = getQueryParam('year');
