@@ -126,29 +126,25 @@
       return '...';
     }
 
-    // Hàm chuyển đổi linh hoạt các định dạng ngày về DD/MM/YYYY
+    // Hàm chuyển đổi chuẩn xác các định dạng về DD/MM/YYYY
     function formatDate(dateStr) {
       if (!dateStr || dateStr === '...') return '...';
       
-      // Đã là dạng DD/MM/YYYY sẵn rồi thì giữ nguyên
-      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+      const cleanStr = dateStr.trim().split('T')[0].split(' ')[0];
 
-      // Xử lý dạng YYYY-MM-DD hoặc YYYY/MM/DD
-      if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(dateStr)) {
-        const cleanStr = dateStr.split('T')[0].split(' ')[0];
+      if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}$/.test(cleanStr)) {
         const parts = cleanStr.split(/[-/]/);
         return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
       }
-      
-      // Xử lý dạng MM/DD/YYYY
-      const parts = dateStr.split('/');
-      if (parts.length === 3) {
-        const month = parts[0].padStart(2, '0');
-        const day = parts[1].padStart(2, '0');
-        const year = parts[2];
+
+      const d = new Date(cleanStr);
+      if (!isNaN(d.getTime())) {
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
         return `${day}/${month}/${year}`;
       }
-      
+
       return dateStr;
     }
 
@@ -171,10 +167,9 @@
       if(document.getElementById('val-ma-tube')) document.getElementById('val-ma-tube').innerText = maTube;
       if(document.getElementById('val-ten-kh')) document.getElementById('val-ten-kh').innerText = tenKh;
       if(document.getElementById('val-so-lo')) document.getElementById('val-so-lo').innerText = soLo;
-      if(document.getElementById('val-han-dung')) document.getElementById('val-han-dung').innerText = hanDung;
       if(document.getElementById('val-sl-luu')) document.getElementById('val-sl-luu').innerText = slLuu;
       
-      // ĐÃ SỬA: Đưa ngayLuu qua hàm formatDate()
+      if(document.getElementById('val-han-dung')) document.getElementById('val-han-dung').innerText = formatDate(hanDung);
       if(document.getElementById('val-ngay-luu')) document.getElementById('val-ngay-luu').innerText = formatDate(ngayLuu);
       
       if(document.getElementById('val-tg-luu')) document.getElementById('val-tg-luu').innerText = tgLuu;
