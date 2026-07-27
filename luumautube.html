@@ -94,7 +94,7 @@
         <td>Thời gian lưu:</td>
         <td><b><span id="val-tg-luu">...</span></b></td>
       </tr>
-      <!-- Dòng 9: Ô Nhân viên lưu mẫu (Đã căn giữa tên so với chữ Nhân viên lưu mẫu) -->
+      <!-- Dòng 9: Ô Nhân viên lưu mẫu -->
       <tr>
         <td colspan="2" style="height: 85px; font-weight: bold; text-align: right; vertical-align: top; padding: 8px 40px 8px 8px;">
           <div style="display: inline-block; text-align: center;">
@@ -125,20 +125,33 @@
       }
       return '...';
     }
-     // Hàm hỗ trợ tự động đảo MM/DD/YYYY thành DD/MM/YYYY
+
+    // Hàm chuyển đổi linh hoạt các định dạng ngày về DD/MM/YYYY
     function formatDate(dateStr) {
       if (!dateStr || dateStr === '...') return '...';
       
-      // Nếu chuỗi có dạng MM/DD/YYYY (VD: 07/13/2026)
+      // Đã là dạng DD/MM/YYYY sẵn rồi thì giữ nguyên
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+
+      // Xử lý dạng YYYY-MM-DD hoặc YYYY/MM/DD
+      if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(dateStr)) {
+        const cleanStr = dateStr.split('T')[0].split(' ')[0];
+        const parts = cleanStr.split(/[-/]/);
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+      }
+      
+      // Xử lý dạng MM/DD/YYYY
       const parts = dateStr.split('/');
       if (parts.length === 3) {
         const month = parts[0].padStart(2, '0');
         const day = parts[1].padStart(2, '0');
         const year = parts[2];
-        return `${day}/${month}/${year}`; // Đảo lại thành Ngày/Tháng/Năm (13/07/2026)
+        return `${day}/${month}/${year}`;
       }
+      
       return dateStr;
     }
+
     function fillData() {
       const stt = getQueryParam('stt');
       const year = getQueryParam('year');
@@ -160,7 +173,10 @@
       if(document.getElementById('val-so-lo')) document.getElementById('val-so-lo').innerText = soLo;
       if(document.getElementById('val-han-dung')) document.getElementById('val-han-dung').innerText = hanDung;
       if(document.getElementById('val-sl-luu')) document.getElementById('val-sl-luu').innerText = slLuu;
-      if(document.getElementById('val-ngay-luu')) document.getElementById('val-ngay-luu').innerText = ngayLuu;
+      
+      // ĐÃ SỬA: Đưa ngayLuu qua hàm formatDate()
+      if(document.getElementById('val-ngay-luu')) document.getElementById('val-ngay-luu').innerText = formatDate(ngayLuu);
+      
       if(document.getElementById('val-tg-luu')) document.getElementById('val-tg-luu').innerText = tgLuu;
       if(document.getElementById('val-nv-dbcl')) document.getElementById('val-nv-dbcl').innerText = nvDbcl;
     }
