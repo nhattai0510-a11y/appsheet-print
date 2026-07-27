@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Nhãn Kiểm Tra & Lưu Mẫu - A5</title>
+  <style>
+    @page { 
+      size: A5 portrait; 
+      margin: 5mm 8mm 4mm 6mm; 
+    }
+    * { box-sizing: border-box; }
+    body { 
+      font-family: "Times New Roman", Times, serif; 
+      font-size: 8.5pt; 
+      line-height: 1.25; 
+      margin: 1cm; 
+      padding: 0; 
+      color: #000; 
+    }
+    
+    .page { 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: flex-start;
+      height: 20mm; 
+      box-sizing: border-box; 
+      width: 100%; 
+      margin: 0 auto; 
+    }
+    
+    .no-print { 
+      background: #f0f0f0; 
+      padding: 8px; 
+      margin-bottom: 10px; 
+      border-bottom: 0.5px solid #7c7a7a; 
+      text-align: center; 
+    }
+    .btn { 
+      padding: 6px 14px; 
+      background: #007bff; 
+      color: #fff; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      font-size: 13px; 
+      font-weight: bold; 
+    }
+
+    /* Khối chứa 1 nhãn */
+    .label-card {
+      width: 100%;
+      margin-bottom: 4mm;
+    }
+
+    table.main-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      table-layout: fixed; 
+    }
+    table.main-table td { 
+      border: 0.5px solid #000; 
+      padding: 3px 6px; 
+      vertical-align: middle; 
+      word-wrap: break-word; 
+    }
+    
+    /* ĐÃ TĂNG: Tăng cột logo lên 48% để đồng bộ với cột chữ bên dưới */
+    .header-logo { 
+      width: 25%; 
+      text-align: center; 
+    }
+    .header-logo img { 
+      max-height: 38px; 
+      width: auto; 
+      display: block; 
+      margin: 0 auto; 
+    }
+    
+    .company-info {
+      font-size: 7.5pt;
+      line-height: 1.15;
+      text-align: center;
+    }
+    .company-name {
+      font-size: 8.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 1px;
+    }
+
+    .title-row {
+      text-align: center;
+      font-weight: bold;
+      font-size: 10.5pt;
+      padding: 4px !important;
+      text-transform: uppercase;
+    }
+    
+    /* ĐÃ TĂNG: Cột tiêu đề bên trái rộng 48% giúp nhãn "Số lượng mẫu kiểm tra" thoải mái chỗ */
+    .col-label {
+      width: 25%;
+      white-space: nowrap;
+      font-size: 8.5pt;
+    }
+
+    /* Dòng footer ngoài bảng của mỗi nhãn */
+    .footer-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 7.5pt;
+      padding: 2px 2px 0 2px;
+      margin-top: 1px;
+      white-space: nowrap;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 0; margin: 0; }
+      .page { height: 200mm; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="no-print">
+    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (Khổ A5 - 3 Nhãn)</button>
+  </div>
+
+  <div class="page">
+    
+    <!-- NHÃN 1: MẪU KIỂM TRA -->
+    <div class="label-card">
+      <table class="main-table">
+        <tr>
+          <td class="header-logo">
+            <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
+          </td>
+          <td class="company-info">
+            <b style="font-size: 10pt; text-decoration: underline;">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
+            <div>Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh</div>
+            <div>CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh</div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="title-row">MẪU KIỂM TRA</td>
+        </tr>
+        <tr>
+          <td class="col-label">Tên sản phẩm:</td>
+          <td><b><span class="val-ten-sp">...</span></b></td>
+        </tr>
+        <tr>
+          <td class="col-label">Số hồ sơ lô:</td>
+          <td><b><span class="val-so-hsl">...</span></b></td>
+        </tr>
+        <tr>
+          <td class="col-label">Số lô sản xuất:</td>
+          <td><b><span class="val-so-lo">...</span></b></td>
+        </tr>
+        <tr>
+          <td class="col-label">Số lượng mẫu kiểm tra:</td>
+          <td><b><span id="val-sl-kt">...</span></b> ống</td>
+        </tr>
+      </table>
+      <div class="footer-info">
+        <div>M06a/QA-SOP 06</div>
+        <div>Lần sửa đổi: 00</div>
+        <div>Trang 1/1</div>
+      </div>
+    </div>
+
+    <!-- NHÃN 2: MẪU LƯU -->
+    <div class="label-card">
+      <table class="main-table">
+        <tr>
+          <td class="header-logo">
+            <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
+          </td>
+          <td class="company-info">
+           <b style="font-size: 10pt; text-decoration: underline;">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
+            <div>Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh</div>
+            <div>CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh</div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="title-row">MẪU LƯU</td>
+        </tr>
+        <tr>
+          <td class="col-label">Tên sản phẩm:</td>
+          <td><b><span class="val-ten-sp">...</span></b></td>
+        </tr>
+        <tr>
+          <td class="col-label">Số hồ sơ lô:</td>
+          <td><b><span class="val-so-hsl">...</span></b></td>
+        </tr>
+        <tr>
+          <td class="col-label">Số lô sản xuất:</td>
+          <td><b><span class="val-so-lo">...</span></b></td>
+        </tr>
+        <tr>
+          <td class="col-label">Số lượng mẫu lưu:</td>
+          <td><b><span id="val-sl-luu">...</span></b> ống</td>
+        </tr>
+      </table>
+      <div class="footer-info">
+        <div>M06b/QA-SOP 06</div>
+        <div>Lần sửa đổi: 00</div>
+        <div>Trang 1/1</div>
+      </div>
+    </div>
+
+    <!-- NHÃN 3: SẢN PHẨM LẤY MẪU -->
+    <div class="label-card" style="margin-bottom: 0;">
+      <table class="main-table">
+        <tr>
+          <td class="header-logo">
+            <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
+          </td>
+          <td class="company-info">
+            <b style="font-size: 10pt; text-decoration: underline;">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
+            <div>Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh</div>
+            <div>CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh</div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="title-row">SẢN PHẨM LẤY MẪU</td>
+        </tr>
+        <tr>
+          <td class="col-label">Tên sản phẩm:</td>
+          <td><b><span class="val-ten-sp">...</span></b></td>
+        </tr>
+        <tr>
+          <td class="col-label">Số hồ sơ lô:</td>
+          <td><b><span class="val-so-hsl">...</span></b></td>
+        </tr>
+        <tr>
+          <td class="col-label">Số lô sản xuất:</td>
+          <td><b><span class="val-so-lo">...</span></b></td>
+        </tr>
+        <tr>
+          <td class="col-label">Số lượng mẫu lưu:</td>
+          <td><b><span id="val-tong-mau">...</span></b> ống</td>
+        </tr>
+      </table>
+      <div class="footer-info">
+        <div>M06/QA-SOP 06</div>
+        <div>Lần sửa đổi: 00</div>
+        <div>Trang 1/1</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      for (let [key, value] of urlParams.entries()) {
+        if (key.toLowerCase() === param.toLowerCase()) {
+          try { return decodeURIComponent(value) || '...'; } catch(e) { return value || '...'; }
+        }
+      }
+      return '...';
+    }
+
+    function setAllByClass(className, value) {
+      const elements = document.getElementsByClassName(className);
+      for (let el of elements) {
+        el.innerText = value;
+      }
+    }
+
+    function fillData() {
+      const tenSp = getQueryParam('ten_sp');
+      const soHsl = getQueryParam('so_hsl');
+      const soLo = getQueryParam('so_lo');
+
+      const slKt = getQueryParam('sl_kt');
+      const slLuu = getQueryParam('sl_luu');
+      const tongMau = getQueryParam('tong_mau');
+
+      setAllByClass('val-ten-sp', tenSp);
+      setAllByClass('val-so-hsl', soHsl);
+      setAllByClass('val-so-lo', soLo);
+
+      if(document.getElementById('val-sl-kt')) document.getElementById('val-sl-kt').innerText = slKt;
+      if(document.getElementById('val-sl-luu')) document.getElementById('val-sl-luu').innerText = slLuu;
+      if(document.getElementById('val-tong-mau')) document.getElementById('val-tong-mau').innerText = tongMau;
+    }
+
+    function triggerPrint() { try { window.print(); } catch (e) { alert("Bấm Ctrl + P để in!"); } }
+    window.addEventListener('DOMContentLoaded', fillData);
+  </script>
+</body>
+</html>
