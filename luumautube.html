@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Nhãn Lưu Mẫu - A5</title>
+  <style>
+    @page { size: A5 portrait; margin: 5mm 8mm 5mm 8mm; }
+    * { box-sizing: border-box; }
+    body { font-family: "Times New Roman", Times, serif; font-size: 10pt; line-height: 1.3; margin: 0; padding: 0; color: #000; }
+    .page { display: flex; flex-direction: column; min-height: 198mm; box-sizing: border-box; width: 100%; max-width: 98%; margin: 0 auto; }
+    .no-print { background: #f0f0f0; padding: 8px; margin-bottom: 10px; border-bottom: 0.5px solid #7c7a7a; text-align: center; }
+    .btn { padding: 6px 14px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    
+    table.main-table { width: 100%; border-collapse: collapse; margin-top: 3px; table-layout: fixed; }
+    table.main-table td { border: 0.5px solid #000; padding: 5px 8px; vertical-align: middle; word-wrap: break-word; }
+    
+    .header-logo { width: 22%; text-align: center; }
+    .header-logo img { max-height: 50px; width: auto; display: block; margin: 0 auto; }
+    
+    .text-center { text-align: center; }
+    .text-bold { font-weight: bold; }
+
+    /* Dòng footer ngoài bảng không khung */
+    .footer-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8.5pt;
+      padding: 3px 2px 0 2px;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 0; margin: 0; }
+      .page { height: 198mm; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="no-print">
+    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (Khổ A5)</button>
+  </div>
+
+  <div class="page">
+    <table class="main-table">
+      <!-- Dòng 1: Logo & Tiêu đề Nhãn -->
+      <tr>
+        <td class="header-logo">
+          <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
+        </td>
+        <td class="text-center text-bold" style="font-size: 13pt;">
+          NHÃN LƯU MẪU
+        </td>
+      </tr>
+      <!-- Dòng 2: Số STT -->
+      <tr>
+        <td colspan="2" style="font-size: 10pt;">
+          Số: <b><span id="val-stt">...</span></b> - <b><span id="val-year">...</span></b>/ CL
+        </td>
+      </tr>
+      <!-- Dòng 3: Tên mẫu -->
+      <tr>
+        <td style="width: 28%;">Tên mẫu:</td>
+        <td><b><span id="val-ten-sp">...</span></b> &nbsp;&nbsp;&nbsp;&nbsp; (<b><span id="val-ma-tube">...</span></b>)</td>
+      </tr>
+      <!-- Dòng 4: Khách hàng -->
+      <tr>
+        <td>Khách hàng:</td>
+        <td><b><span id="val-ten-kh">...</span></b></td>
+      </tr>
+      <!-- Dòng 5: Số lô & Hạn dùng -->
+      <tr>
+        <td>Số lô sản xuất:</td>
+        <td>
+          <b><span id="val-so-lo">...</span></b>
+          <span style="float: right; margin-right: 50px;">Hạn dùng: <b><span id="val-han-dung">...</span></b></span>
+        </td>
+      </tr>
+      <!-- Dòng 6: Số lượng mẫu -->
+      <tr>
+        <td>Số lượng mẫu:</td>
+        <td><b><span id="val-sl-luu">...</span></b> ống</td>
+      </tr>
+      <!-- Dòng 7: Ngày lưu mẫu -->
+      <tr>
+        <td>Ngày lưu mẫu:</td>
+        <td><b><span id="val-ngay-luu">...</span></b></td>
+      </tr>
+      <!-- Dòng 8: Thời gian lưu -->
+      <tr>
+        <td>Thời gian lưu:</td>
+        <td><b><span id="val-tg-luu">...</span></b></td>
+      </tr>
+      <!-- Dòng 9: Ô Nhân viên lưu mẫu (Đã căn giữa tên so với chữ Nhân viên lưu mẫu) -->
+      <tr>
+        <td colspan="2" style="height: 85px; font-weight: bold; text-align: right; vertical-align: top; padding: 8px 40px 8px 8px;">
+          <div style="display: inline-block; text-align: center;">
+            <b>Nhân viên lưu mẫu</b>
+            <div style="margin-top: 35px;">
+              <b><span id="val-nv-dbcl">...</span></b>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Chân trang nằm ngoài khung bao -->
+    <div class="footer-info">
+      <div>M01/QA-SOP 27</div>
+      <div>Lần sửa đổi: 00</div>
+      <div>Trang 1/1</div>
+    </div>
+  </div>
+
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      for (let [key, value] of urlParams.entries()) {
+        if (key.toLowerCase() === param.toLowerCase()) {
+          try { return decodeURIComponent(value) || '...'; } catch(e) { return value || '...'; }
+        }
+      }
+      return '...';
+    }
+
+    function fillData() {
+      const stt = getQueryParam('stt');
+      const year = getQueryParam('year');
+      const tenSp = getQueryParam('ten_sp');
+      const maTube = getQueryParam('ma_tube');
+      const tenKh = getQueryParam('ten_kh');
+      const soLo = getQueryParam('so_lo');
+      const hanDung = getQueryParam('han_dung');
+      const slLuu = getQueryParam('sl_luu');
+      const ngayLuu = getQueryParam('ngay_luu');
+      const tgLuu = getQueryParam('tg_luu');
+      const nvDbcl = getQueryParam('nv_dbcl');
+
+      if(document.getElementById('val-stt')) document.getElementById('val-stt').innerText = stt;
+      if(document.getElementById('val-year')) document.getElementById('val-year').innerText = year;
+      if(document.getElementById('val-ten-sp')) document.getElementById('val-ten-sp').innerText = tenSp;
+      if(document.getElementById('val-ma-tube')) document.getElementById('val-ma-tube').innerText = maTube;
+      if(document.getElementById('val-ten-kh')) document.getElementById('val-ten-kh').innerText = tenKh;
+      if(document.getElementById('val-so-lo')) document.getElementById('val-so-lo').innerText = soLo;
+      if(document.getElementById('val-han-dung')) document.getElementById('val-han-dung').innerText = hanDung;
+      if(document.getElementById('val-sl-luu')) document.getElementById('val-sl-luu').innerText = slLuu;
+      if(document.getElementById('val-ngay-luu')) document.getElementById('val-ngay-luu').innerText = ngayLuu;
+      if(document.getElementById('val-tg-luu')) document.getElementById('val-tg-luu').innerText = tgLuu;
+      if(document.getElementById('val-nv-dbcl')) document.getElementById('val-nv-dbcl').innerText = nvDbcl;
+    }
+
+    function triggerPrint() { try { window.print(); } catch (e) { alert("Bấm Ctrl + P để in!"); } }
+    window.addEventListener('DOMContentLoaded', fillData);
+  </script>
+</body>
+</html>
