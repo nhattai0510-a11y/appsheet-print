@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Lệnh Xuất Xưởng</title>
+  <style>
+    @page { size: A4 portrait; margin: 10mm 8mm 6mm 8mm; }
+    * { box-sizing: border-box; }
+    body { font-family: "Times New Roman", Times, serif; font-size: 10.5pt; line-height: 1.2; margin: 0.5cm; padding: 0; color: #000; }
+    .page { display: flex; flex-direction: column; min-height: 138mm; box-sizing: border-box; }
+    
+    .no-print { background: #f0f0f0; padding: 10px; margin-bottom: 10px; border-bottom: 0.5px solid #7c7a7a; text-align: center; }
+    .btn { padding: 6px 14px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+
+    /* Bảng Header */
+    .header-table { width: 100%; border-collapse: collapse; border: 0.5px solid #7c7a7a; margin-bottom: 10px; }
+    .header-table td { border: 0.5px solid #7c7a7a; padding: 8px; vertical-align: middle; }
+    .header-logo { width: 25%; text-align: center; }
+    .header-logo img { max-height: 50px; width: auto; display: block; margin: 0 auto; }
+    .header-title { width: 75%; font-size: 14pt; font-weight: bold; text-align: center; text-transform: uppercase; }
+
+    .section-header { font-weight: bold; margin-top: 10px; margin-bottom: 4px; text-transform: uppercase; }
+
+    /* Bảng Thông tin sản phẩm */
+    .info-table { width: 100%; border-collapse: collapse; margin-left: 5px; margin-bottom: 8px; }
+    .info-table td { border: none; padding: 3px 0; vertical-align: middle; }
+    .col-label { white-space: nowrap; width: 150px; }
+
+    /* Footer Chữ ký & Mã biểu mẫu */
+    .footer-table { margin-top: auto; border: none; width: 100%; }
+    .footer-table td { border: none; text-align: center; vertical-align: top; }
+    
+    .doc-info { width: 100%; margin-top: 8px; font-size: 8.5pt; border-top: 0.5px solid #7c7a7a; padding-top: 1px; }
+    .doc-info td { border: none !important; padding: 0; }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 0; margin: 0; }
+      .page { height: 138mm; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="no-print">
+    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (Ctrl + P)</button>
+  </div>
+
+  <div class="page">
+    <!-- HEADER TABLE -->
+    <table class="header-table">
+      <tr>
+        <td class="header-logo">
+          <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/100x40?text=LOGO'">
+        </td>
+        <td class="header-title">LỆNH XUẤT XƯỞNG</td>
+      </tr>
+    </table>
+
+    <!-- I. THÔNG TIN SẢN PHẨM -->
+    <div class="section-header">I. THÔNG TIN SẢN PHẨM</div>
+    <table class="info-table">
+      <tr>
+        <td class="col-label">- Tên sản phẩm:</td>
+        <td><b><span id="val-ten-sp">...</span></b></td>
+      </tr>
+      <tr>
+        <td class="col-label">- Lô sản xuất:</td>
+        <td><b><span id="val-so-lo">...</span></b></td>
+      </tr>
+      <tr>
+        <td class="col-label">- Hạn dùng:</td>
+        <td><b><span id="val-han-dung">...</span></b></td>
+      </tr>
+      <tr>
+        <td class="col-label">- Số hồ sơ lô:</td>
+        <td><b><span id="val-so-hsl">...</span></b></td>
+      </tr>
+      <tr>
+        <td class="col-label">- Ngày sản xuất:</td>
+        <td><b>Từ ngày <span id="val-ngay-sx">...</span> đến ngày <span id="val-ngay-kt">...</span></b></td>
+      </tr>
+      <tr>
+        <td class="col-label">- Số lượng nhập kho:</td>
+        <td><b><span id="val-so-luong">...</span></b></td>
+      </tr>
+      <tr>
+        <td colspan="2">- Kiểm tra theo tiêu chuẩn thành phẩm: (QA-SOP 25)</td>
+      </tr>
+    </table>
+
+    <!-- II. KẾT LUẬN -->
+    <div class="section-header" style="margin-top: 5px;">II. KẾT LUẬN: &nbsp;&nbsp; ĐẠT CHẤT LƯỢNG</div>
+
+    <!-- FOOTER CHỮ KÝ -->
+    <table class="footer-table">
+      <tr>
+        <td style="width: 50%;"><br>
+          <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
+          ……………………………….
+        </td>
+        <td style="width: 50%;">
+          Ngày …… tháng …… năm ……<br>
+          <b>ĐDLĐ CHẤT LƯỢNG</b><br><br><br><br>
+          ……………………………….
+        </td>
+      </tr>
+    </table>
+
+    <!-- MÃ BẢNG BIỂU -->
+    <table class="doc-info">
+      <tr>
+        <td style="width: 33%; text-align: left;">M07/QA-SOP 12</td>
+        <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
+        <td style="width: 33%; text-align: right;">Trang 1/1</td>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      for (let [key, value] of urlParams.entries()) {
+        if (key.toLowerCase() === param.toLowerCase()) {
+          try { return decodeURIComponent(value) || '...'; } catch(e) { return value || '...'; }
+        }
+      }
+      return '...';
+    }
+    // Hàm chuyển đổi chuẩn xác các định dạng về DD/MM/YYYY
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr === '...') return '...';
+      
+      const cleanStr = dateStr.trim().split('T')[0].split(' ')[0];
+
+      if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}$/.test(cleanStr)) {
+        const parts = cleanStr.split(/[-/]/);
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+      }
+
+      const d = new Date(cleanStr);
+      if (!isNaN(d.getTime())) {
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
+
+      return dateStr;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr === '...') return '...';
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        return `${parts[1].padStart(2, '0')}/${parts[0].padStart(2, '0')}/${parts[2]}`;
+      }
+      return dateStr;
+    }
+
+    function fillData() {
+      const tenSp = getQueryParam('ten_sp');
+      const soLo = getQueryParam('so_lo');
+      const hanDung = getQueryParam('han_dung');
+      const soHsl = getQueryParam('so_hsl');
+      const ngaySx = formatDate(getQueryParam('ngay_sx'));
+      const ngayKt = formatDate(getQueryParam('ngay_kt'));
+      const soLuong = getQueryParam('so_luong');
+
+      if (document.getElementById('val-ten-sp')) document.getElementById('val-ten-sp').innerText = tenSp;
+      if (document.getElementById('val-so-lo')) document.getElementById('val-so-lo').innerText = soLo;
+      if (document.getElementById('val-han-dung')) document.getElementById('val-han-dung').innerText = hanDung;
+      if (document.getElementById('val-so-hsl')) document.getElementById('val-so-hsl').innerText = soHsl;
+      if (document.getElementById('val-ngay-sx')) document.getElementById('val-ngay-sx').innerText = ngaySx;
+      if (document.getElementById('val-ngay-kt')) document.getElementById('val-ngay-kt').innerText = ngayKt;
+      if (document.getElementById('val-so-luong')) document.getElementById('val-so-luong').innerText = soLuong;
+    }
+
+    function triggerPrint() { try { window.print(); } catch (e) { alert("Bấm Ctrl + P để in!"); } }
+    window.addEventListener('DOMContentLoaded', fillData);
+  </script>
+</body>
+</html>
