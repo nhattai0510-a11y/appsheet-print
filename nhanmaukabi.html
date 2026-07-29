@@ -2,54 +2,189 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Nhãn Kiểm Tra & Lưu Mẫu - A5</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhãn Kiểm Tra & Lưu Mẫu - Khổ A5</title>
   <style>
+    /* ==========================================
+       1. THIẾT LẬP TRANG IN (PAGE SETUP A5)
+       ========================================== */
     @page { 
       size: A5 portrait; 
-      margin: 5mm 8mm 4mm 6mm; 
+      margin: 0; 
     }
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box; 
+    }
+    
+    :root { 
+      --bg-viewer: #e2e8f0; 
+      --paper-bg: #ffffff; 
+      --text-color: #000000; 
+      --border-color: #000000; 
+    }
+    
+    body.dark-mode { 
+      --bg-viewer: #0f172a; 
+    }
+
     body { 
       font-family: "Times New Roman", Times, serif; 
       font-size: 8.5pt; 
-      line-height: 1.25; 
-      margin: 1cm; 
+      line-height: 1.15; 
+      margin: 0; 
       padding: 0; 
-      color: #000; 
-    }
-    
-    .page { 
-      display: flex; 
-      flex-direction: column; 
-      justify-content: flex-start;
-      height: 20mm; 
-      box-sizing: border-box; 
-      width: 100%; 
-      margin: 0 auto; 
-    }
-    
-    .no-print { 
-      background: #f0f0f0; 
-      padding: 8px; 
-      margin-bottom: 10px; 
-      border-bottom: 0.5px solid #7c7a7a; 
-      text-align: center; 
-    }
-    .btn { 
-      padding: 6px 14px; 
-      background: #007bff; 
-      color: #fff; 
-      border: none; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-size: 13px; 
-      font-weight: bold; 
+      color: var(--text-color); 
+      background-color: var(--bg-viewer);
+      transition: background-color 0.3s ease;
     }
 
-    /* Khối chứa 1 nhãn */
+    /* ==========================================
+       2. MODERN UI/UX TOOLBAR
+       ========================================== */
+    .app-toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 55px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body.dark-mode .app-toolbar {
+      background: rgba(30, 41, 59, 0.9);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .toolbar-title {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-ui {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+    body.dark-mode .btn-secondary {
+      background: #334155;
+      color: #f8fafc;
+    }
+    body.dark-mode .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      padding: 2px;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+    body.dark-mode .zoom-controls {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .btn-zoom {
+      background: transparent;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+      color: inherit;
+    }
+    .btn-zoom:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    body.dark-mode .btn-zoom:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================
+       3. PAPER CANVAS VIEWER (XEM TRƯỚC A5)
+       ========================================== */
+    .viewer-container {
+      padding-top: 75px;
+      padding-bottom: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+
+    .page {
+      background: var(--paper-bg);
+      width: 148mm;
+      height: 210mm;
+      min-height: 210mm;
+      padding: 6mm 8mm 5mm 8mm;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      border-radius: 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;gap: 8px;
+      box-sizing: border-box;
+      transform-origin: top center;
+      transition: transform 0.2s ease;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+      overflow: hidden;
+    }
+
+    /* ==========================================
+       4. BỐ TRÍ VÀ THIẾT KẾ NHÃN (LABEL CONTENT)
+       ========================================== */
     .label-card {
       width: 100%;
-      margin-bottom: 4mm;
+      margin-bottom: 5px;
     }
 
     table.main-table { 
@@ -58,200 +193,271 @@
       table-layout: fixed; 
     }
     table.main-table td { 
-      border: 0.5px solid #000; 
-      padding: 3px 6px; 
+      border: 0.5px solid var(--border-color); 
+      padding: 2.5px 5px; 
       vertical-align: middle; 
       word-wrap: break-word; 
     }
     
-    /* ĐÃ TĂNG: Tăng cột logo lên 48% để đồng bộ với cột chữ bên dưới */
     .header-logo { 
       width: 25%; 
       text-align: center; 
     }
     .header-logo img { 
-      max-height: 38px; 
+      max-height: 36px; 
       width: auto; 
       display: block; 
       margin: 0 auto; 
     }
     
     .company-info {
-      font-size: 7.5pt;
+      font-size: 7pt;
       line-height: 1.15;
       text-align: center;
     }
     .company-name {
       font-size: 8.5pt;
       font-weight: bold;
-      text-transform: uppercase;
-      margin-bottom: 1px;
+      text-decoration: underline;
     }
 
     .title-row {
       text-align: center;
       font-weight: bold;
-      font-size: 10.5pt;
-      padding: 4px !important;
+      font-size: 10pt;
+      padding: 3px !important;
       text-transform: uppercase;
     }
     
-    /* ĐÃ TĂNG: Cột tiêu đề bên trái rộng 48% giúp nhãn "Số lượng mẫu kiểm tra" thoải mái chỗ */
     .col-label {
-      width: 25%;
+      width: 32%;
       white-space: nowrap;
-      font-size: 8.5pt;
+      font-size: 8pt;
     }
 
-    /* Dòng footer ngoài bảng của mỗi nhãn */
     .footer-info {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 7.5pt;
-      padding: 2px 2px 0 2px;
+      font-size: 7pt;
+      padding: 1px 2px 0 2px;
       margin-top: 1px;
       white-space: nowrap;
     }
 
+    /* ==========================================
+       5. CSS DÀNH RIÊNG CHỈ KHI IN (PRINT MEDIA)
+       ========================================== */
     @media print {
-      .no-print { display: none !important; }
-      body { padding: 0; margin: 0; }
-      .page { height: 200mm; }
+      html, body { 
+        width: 148mm; 
+        height: 210mm; 
+        overflow: hidden !important; 
+        background: #ffffff !important; 
+        margin: 0 !important; 
+        padding: 0 !important; 
+      }
+      .no-print, .app-toolbar { 
+        display: none !important; 
+      }
+      .viewer-container { 
+        padding: 0 !important; 
+        margin: 0 !important; 
+        display: block !important; 
+        min-height: auto !important; 
+      }
+      .page {
+        width: 148mm !important;
+        height: 210mm !important;
+        min-height: 210mm !important;
+        max-height: 210mm !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 6mm 8mm 5mm 8mm !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        gap: 4px !important;
+        overflow: hidden !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      table.main-table td { 
+        border-color: #000000 !important; 
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="no-print">
-    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (Khổ A5 - 3 Nhãn)</button>
+  <!-- FIXED TOOLBAR (MODERN UI/UX) -->
+  <div class="app-toolbar no-print">
+    <div class="toolbar-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      <span>Xem Trước Bản In (Khổ A5 - 3 Nhãn)</span>
+    </div>
+    
+    <div class="toolbar-actions">
+      <!-- Bộ điều chỉnh Zoom -->
+      <div class="zoom-controls">
+        <button class="btn-zoom" onclick="zoomOut()" title="Thu nhỏ">-</button>
+        <span id="zoom-value" style="padding: 0 6px;">100%</span>
+        <button class="btn-zoom" onclick="zoomIn()" title="Phóng to">+</button>
+      </div>
+
+      <!-- Đổi Chế Độ Dark Mode -->
+      <button class="btn-ui btn-secondary" onclick="toggleDarkMode()">
+        <span>🌙 / ☀️ Chế độ</span>
+      </button>
+
+      <!-- Nút In / Xuất PDF -->
+      <button class="btn-ui btn-primary" onclick="triggerPrint()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        <span>In Nhãn / Xuất PDF</span>
+      </button>
+    </div>
   </div>
 
-  <div class="page">
-    
-    <!-- NHÃN 1: MẪU KIỂM TRA -->
-    <div class="label-card">
-      <table class="main-table">
-        <tr>
-          <td class="header-logo">
-            <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
-          </td>
-          <td class="company-info">
-            <b style="font-size: 10pt; text-decoration: underline;">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
-            <div>Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh</div>
-            <div>CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh</div>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="title-row">MẪU KIỂM TRA</td>
-        </tr>
-        <tr>
-          <td class="col-label">Tên sản phẩm:</td>
-          <td><b><span class="val-ten-sp">...</span></b></td>
-        </tr>
-        <tr>
-          <td class="col-label">Số hồ sơ lô:</td>
-          <td><b><span class="val-so-hsl">...</span></b></td>
-        </tr>
-        <tr>
-          <td class="col-label">Số lô sản xuất:</td>
-          <td><b><span class="val-so-lo">...</span></b></td>
-        </tr>
-        <tr>
-          <td class="col-label">Số lượng mẫu kiểm tra:</td>
-          <td><b><span id="val-sl-kt">...</span></b> ống</td>
-        </tr>
-      </table>
-      <div class="footer-info">
-        <div>M06a/QA-SOP 06</div>
-        <div>Lần sửa đổi: 00</div>
-        <div>Trang 1/1</div>
+  <!-- CANVAS KHỔ GIẤY A5 -->
+  <div class="viewer-container">
+    <div class="page" id="paper-page">
+      
+      <!-- NHÃN 1: MẪU KIỂM TRA -->
+      <div class="label-card">
+        <table class="main-table">
+          <tr>
+            <td class="header-logo">
+              <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
+            </td>
+            <td class="company-info">
+              <b class="company-name">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
+              <div>Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh</div>
+              <div>CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh</div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" class="title-row">MẪU KIỂM TRA</td>
+          </tr>
+          <tr>
+            <td class="col-label">Tên sản phẩm:</td>
+            <td><b><span class="val-ten-sp">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số hồ sơ lô:</td>
+            <td><b><span class="val-so-hsl">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số lô sản xuất:</td>
+            <td><b><span class="val-so-lo">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số lượng mẫu kiểm tra:</td>
+            <td><b><span id="val-sl-kt">...</span></b> ống</td>
+          </tr>
+        </table>
+        <div class="footer-info">
+          <div>M06a/QA-SOP 06</div>
+          <div>Lần sửa đổi: 00</div>
+          <div>Trang 1/1</div>
+        </div>
       </div>
-    </div>
 
-    <!-- NHÃN 2: MẪU LƯU -->
-    <div class="label-card">
-      <table class="main-table">
-        <tr>
-          <td class="header-logo">
-            <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
-          </td>
-          <td class="company-info">
-           <b style="font-size: 10pt; text-decoration: underline;">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
-            <div>Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh</div>
-            <div>CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh</div>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="title-row">MẪU LƯU</td>
-        </tr>
-        <tr>
-          <td class="col-label">Tên sản phẩm:</td>
-          <td><b><span class="val-ten-sp">...</span></b></td>
-        </tr>
-        <tr>
-          <td class="col-label">Số hồ sơ lô:</td>
-          <td><b><span class="val-so-hsl">...</span></b></td>
-        </tr>
-        <tr>
-          <td class="col-label">Số lô sản xuất:</td>
-          <td><b><span class="val-so-lo">...</span></b></td>
-        </tr>
-        <tr>
-          <td class="col-label">Số lượng mẫu lưu:</td>
-          <td><b><span id="val-sl-luu">...</span></b> ống</td>
-        </tr>
-      </table>
-      <div class="footer-info">
-        <div>M06b/QA-SOP 06</div>
-        <div>Lần sửa đổi: 00</div>
-        <div>Trang 1/1</div>
+      <!-- NHÃN 2: MẪU LƯU -->
+      <div class="label-card">
+        <table class="main-table">
+          <tr>
+            <td class="header-logo">
+              <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
+            </td>
+            <td class="company-info">
+              <b class="company-name">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
+              <div>Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh</div>
+              <div>CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh</div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" class="title-row">MẪU LƯU</td>
+          </tr>
+          <tr>
+            <td class="col-label">Tên sản phẩm:</td>
+            <td><b><span class="val-ten-sp">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số hồ sơ lô:</td>
+            <td><b><span class="val-so-hsl">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số lô sản xuất:</td>
+            <td><b><span class="val-so-lo">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số lượng mẫu lưu:</td>
+            <td><b><span id="val-sl-luu">...</span></b> ống</td>
+          </tr>
+        </table>
+        <div class="footer-info">
+          <div>M06b/QA-SOP 06</div>
+          <div>Lần sửa đổi: 00</div>
+          <div>Trang 1/1</div>
+        </div>
       </div>
-    </div>
 
-    <!-- NHÃN 3: SẢN PHẨM LẤY MẪU -->
-    <div class="label-card" style="margin-bottom: 0;">
-      <table class="main-table">
-        <tr>
-          <td class="header-logo">
-            <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
-          </td>
-          <td class="company-info">
-            <b style="font-size: 10pt; text-decoration: underline;">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
-            <div>Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh</div>
-            <div>CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh</div>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="title-row">SẢN PHẨM LẤY MẪU</td>
-        </tr>
-        <tr>
-          <td class="col-label">Tên sản phẩm:</td>
-          <td><b><span class="val-ten-sp">...</span></b></td>
-        </tr>
-        <tr>
-          <td class="col-label">Số hồ sơ lô:</td>
-          <td><b><span class="val-so-hsl">...</span></b></td>
-        </tr>
-        <tr>
-          <td class="col-label">Số lô sản xuất:</td>
-          <td><b><span class="val-so-lo">...</span></b></td>
-        </tr>
-        <tr>
-          <td class="col-label">Số lượng mẫu lưu:</td>
-          <td><b><span id="val-tong-mau">...</span></b> ống</td>
-        </tr>
-      </table>
-      <div class="footer-info">
-        <div>M06/QA-SOP 06</div>
-        <div>Lần sửa đổi: 00</div>
-        <div>Trang 1/1</div>
+      <!-- NHÃN 3: SẢN PHẨM LẤY MẪU -->
+      <div class="label-card">
+        <table class="main-table">
+          <tr>
+            <td class="header-logo">
+              <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
+            </td>
+            <td class="company-info">
+              <b class="company-name">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
+              <div>Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh</div>
+              <div>CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh</div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" class="title-row">SẢN PHẨM LẤY MẪU</td>
+          </tr>
+          <tr>
+            <td class="col-label">Tên sản phẩm:</td>
+            <td><b><span class="val-ten-sp">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số hồ sơ lô:</td>
+            <td><b><span class="val-so-hsl">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số lô sản xuất:</td>
+            <td><b><span class="val-so-lo">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số lượng mẫu lưu:</td>
+            <td><b><span id="val-tong-mau">...</span></b> ống</td>
+          </tr>
+        </table>
+        <div class="footer-info">
+          <div>M06/QA-SOP 06</div>
+          <div>Lần sửa đổi: 00</div>
+          <div>Trang 1/1</div>
+        </div>
       </div>
-    </div>
 
+    </div>
   </div>
 
   <script>
+    // 1. Đọc và lấy dữ liệu truyền qua URL Parameters
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       for (let [key, value] of urlParams.entries()) {
@@ -287,7 +493,42 @@
       if(document.getElementById('val-tong-mau')) document.getElementById('val-tong-mau').innerText = tongMau;
     }
 
-    function triggerPrint() { try { window.print(); } catch (e) { alert("Bấm Ctrl + P để in!"); } }
+    // 2. Chức năng In / Xuất PDF
+    function triggerPrint() { 
+      try { 
+        window.print(); 
+      } catch (e) { 
+        alert("Bấm tổ hợp phím Ctrl + P để thực hiện in!"); 
+      } 
+    }
+
+    // 3. Tính năng Thu Phóng (Zoom)
+    let currentZoom = 100;
+    function updateZoom() {
+      const paper = document.getElementById('paper-page');
+      paper.style.transform = `scale(${currentZoom / 100})`;
+      document.getElementById('zoom-value').innerText = `${currentZoom}%`;
+    }
+
+    function zoomIn() {
+      if (currentZoom < 180) {
+        currentZoom += 10;
+        updateZoom();
+      }
+    }
+
+    function zoomOut() {
+      if (currentZoom > 60) {
+        currentZoom -= 10;
+        updateZoom();
+      }
+    }
+
+    // 4. Bật/Tắt chế độ tối (Dark Mode)
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
     window.addEventListener('DOMContentLoaded', fillData);
   </script>
 </body>
