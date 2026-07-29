@@ -96,24 +96,24 @@
     }
 
     /* BẢNG DỮ LIỆU ĐÃ ĐƯỢC CHỈNH ĐỀU HÀNG VÀ CỐ ĐỊNH CỘT */
-.grid-data-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed; 
-  margin-top: 1px;
-}
+    .grid-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed; 
+      margin-top: 1px;
+    }
 
-.grid-data-table tbody tr {
-  height: 40px; /* Tất cả các dòng sẽ cao bằng nhau đúng 40px */
-}
+    .grid-data-table tbody tr {
+      height: 40px; /* Tất cả các dòng sẽ cao bằng nhau đúng 40px */
+    }
 
-.grid-data-table th, 
-.grid-data-table td {
-  border: 1px solid #000;
-  padding: 3px 5px;
-  vertical-align: middle;
-  word-wrap: break-word; /* Tự xuống dòng nếu chữ quá dài */
-}
+    .grid-data-table th, 
+    .grid-data-table td {
+      border: 1px solid #000;
+      padding: 3px 5px;
+      vertical-align: middle;
+      word-wrap: break-word; /* Tự xuống dòng nếu chữ quá dài */
+    }
 
     /* Footer Chữ ký */
     .footer-signature { 
@@ -207,7 +207,7 @@
         </tr>
       </table>
 
-      <!-- Bảng thông số lô sản xuất - Nối trực tiếp không khoảng trống -->
+      <!-- Bảng thông số lô sản xuất -->
       <table class="grid-data-table">
         <thead>
           <tr>
@@ -239,8 +239,7 @@
           <tr><td></td><td style="font-size: 8.5pt;">Số 1:…… Số 2:……<br>Số 3:…… Số 4:……</td><td></td><td></td><td></td><td></td></tr>
           <tr><td></td><td style="font-size: 8.5pt;">Số 1:…… Số 2:……<br>Số 3:…… Số 4:……</td><td></td><td></td><td></td><td></td></tr>
           <tr><td></td><td style="font-size: 8.5pt;">Số 1:…… Số 2:……<br>Số 3:…… Số 4:……</td><td></td><td></td><td></td><td></td></tr>
-                  
-          </tbody>
+        </tbody>
       </table>
 
       <!-- Bảng Chữ ký dính sát đáy bảng dữ liệu -->
@@ -423,7 +422,7 @@
               <td class="text-center bold">4</td>
               <td style="padding: 10px 6px;">
                 * Phòng đóng gói cấp 2:<br>
-                Kiểm tra sản phẩm và nhãn dán thùng phải đúng. Các thùng sản phẩm sắp xếp gọn gàng, đúng vị trí.<br>
+                Kiểm tra sản phẩm và nhãn dán thùng phải đúng. Các thùng sản phẩm sắp xếp gọn gàng, đúng vị trí.<br>
                 <b>Kết quả: Đạt ◻; Không đạt ◻</b> &nbsp;&nbsp; *Khắc phục: (nếu có)<br>
                 Tổng số lượng sản phẩm đã đóng thùng: …………………………….cái<br>
                 Số lượng thùng: ……………………đã dán nhãn.<br>
@@ -580,17 +579,26 @@
       }
       return '...';
     }
-    // Hàm tự động đảo MM/DD/YYYY thành DD/MM/YYYY chuẩn
+
+    // Hàm chuyển đổi ngày từ MM/DD/YYYY hoặc YYYY-MM-DD sang DD/MM/YYYY chuẩn
     function formatDate(dateStr) {
       if (!dateStr || dateStr === '...') return '...';
-      const parts = dateStr.split('/');
-      if (parts.length === 3) {
-        const month = parts[0].padStart(2, '0');
-        const day = parts[1].padStart(2, '0');
-        const year = parts[2];
-        return `${day}/${month}/${year}`;
-      }
-      return dateStr;
+      
+      // Chuyển MM/DD/YYYY (có thể kèm giờ) sang DD/MM/YYYY
+      let formatted = dateStr.replace(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g, (match, p1, p2, p3) => {
+        const month = p1.padStart(2, '0');
+        const day = p2.padStart(2, '0');
+        return `${day}/${month}/${p3}`;
+      });
+
+      // Chuyển YYYY-MM-DD sang DD/MM/YYYY
+      formatted = formatted.replace(/\b(\d{4})-(\d{1,2})-(\d{1,2})\b/g, (match, p1, p2, p3) => {
+        const day = p3.padStart(2, '0');
+        const month = p2.padStart(2, '0');
+        return `${day}/${month}/${p1}`;
+      });
+
+      return formatted;
     }
 
     function setElementText(id, value) {
@@ -612,8 +620,10 @@
       const soLuong = getQueryParam('so_luong');
       const ghiChu = getQueryParam('ghi_chu');
       const maySx = getQueryParam('may_sx');
-      const tgBatDau = getQueryParam('tg_batdau');
-      const tgKetThuc = getQueryParam('tg_ketthuc');
+      
+      // Áp dụng formatDate cho thời gian bắt đầu & kết thúc
+      const tgBatDau = formatDate(getQueryParam('tg_batdau'));
+      const tgKetThuc = formatDate(getQueryParam('tg_ketthuc'));
       const nguoiLap = getQueryParam('nguoi_lap');
 
       setElementText('val-so-hsl-1', soHsl);
