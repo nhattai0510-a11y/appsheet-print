@@ -2,445 +2,593 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Phiếu Kiểm Tra Men In / Dung Môi - Dung Môi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Viewer - Phiếu Kiểm Tra Men In / Dung Môi</title>
   <style>
-    @page {
-      size: A4 portrait;
-      margin: 8mm 12mm 5mm 10mm; /* Lề dưới giảm xuống 5mm để đẩy sát mép giấy */
+    /* ==========================================
+       1. CORE SYSTEM & CANVAS STYLES (UI/UX)
+       ========================================== */
+    :root {
+      --bg-canvas: #c0d4e3;
+      --bg-page: #ffffff;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --border-color: #000000;
+      --text-main: #1f2937;
+      --toolbar-height: 56px;
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      font-family: "Times New Roman", Times, serif;
-      font-size: 12pt;
-      line-height: 1.2;
-      margin: 0;
-      padding: 0;
-      color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .page {
+    /* Fixed Modern Toolbar */
+    .viewer-toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--toolbar-height);
+      background-color: #1e293b;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .toolbar-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e2e8f0;
+    }
+
+    .toolbar-title span {
+      background: #334155;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .toolbar-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .print-mode-group {
+      display: flex;
+      background: #334155;
+      padding: 3px;
+      border-radius: 6px;
+      gap: 2px;
+    }
+
+    .btn-mode {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-mode.active, .btn-mode:hover {
+      background: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .btn-print {
+      background: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .btn-print:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Document Canvas Container */
+    .document-container {
+      margin-top: var(--toolbar-height);
+      padding: 30px 0;
       display: flex;
       flex-direction: column;
-      min-height: 280mm; /* Chiều cao để Flexbox giãn rộng */
+      align-items: center;
+      gap: 30px;
+      overflow-y: auto;
+    }
+
+    /* Canvas Page Frame (A4 Standard Visual) */
+    .page-canvas {
+      width: 210mm;
+      height: 297mm;
+      background-color: var(--bg-page);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+      border-radius: 2px;
+      padding: 12mm 14mm 12mm 17mm;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      font-family: "Times New Roman", Times, serif;
+      font-size: 11pt;
+      line-height: 1.2;
+      color: #000000;
       box-sizing: border-box;
     }
 
-    .no-print {
-      background: #f0f0f0;
-      padding: 10px;
-      margin-bottom: 20px;
-      border-bottom: 0.5px solid #7c7a7a;
-      text-align: center;
+    .page-break {
+      display: none;
     }
 
-    .btn {
-      padding: 8px 16px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
+    /* ==========================================
+       2. TYPOGRAPHY & TABLE STRUCTURES
+       ========================================== */
     table {
-      width: 99.8%;
+      width: 100% !important;
+      max-width: 100% !important;
       border-collapse: collapse;
       margin-top: 5px;
+      table-layout: fixed; /* Khóa viền bảng không bị tràn bên phải */
     }
 
     th, td {
-      border: 0.5px solid #7c7a7a;
-      padding: 5px 6px;
+      border: 0.5px solid var(--border-color);
+      padding: 4px 6px;
       vertical-align: middle;
+      word-wrap: break-word;
     }
 
-    /* CSS Khung tiêu đề */
+    /* Khung Header Logo & Title */
     .header-table {
-      width: 99.8%;
+      width: 100%;
       border-collapse: collapse;
-      border: 0.5px solid #7c7a7a;
-      margin-bottom: 10px;
+      border: 0.5px solid var(--border-color);
+      margin-bottom: 6px;
     }
 
     .header-table td {
-      border: 0.5px solid #7c7a7a;
-      padding: 8px 10px;
+      border: 0.5px solid var(--border-color);
+      padding: 6px 10px;
       vertical-align: middle;
     }
 
     .header-logo {
-      width: 20%;
+      width: 22%;
       text-align: center;
     }
 
     .header-logo img {
-      max-height: 65px;
+      max-height: 50px;
       width: auto;
       display: block;
       margin: 0 auto;
     }
 
     .header-title {
-      width: 80%;
-      font-size: 16pt;
+      width: 78%;
+      font-size: 14pt;
       font-weight: bold;
       text-align: center;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
+    /* Bảng thông tin không viền */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2px;
+    }
+
+    .info-table td {
+      border: none !important;
+      padding: 2px 0;
+      vertical-align: middle;
+    }
+
     .section-header {
       font-weight: bold;
       margin-top: 8px;
+      margin-bottom: 2px;
     }
 
     .text-center { text-align: center; }
     .text-bold { font-weight: bold; }
 
+    /* Footer & Chân trang */
     .footer-table {
-      margin-top: 15px;
+      margin-top: 10px;
       border: none;
-    }
-    .footer-table td {
-      border: none;
-      text-align: center;
     }
 
-    /* CHÂN TRANG ĐƯỢC ĐẨY SÁT ĐÁY BẰNG FLEXBOX */
+    .footer-table td {
+      border: none !important;
+      text-align: center;
+      vertical-align: top;
+    }
+
     .doc-info {
       width: 100%;
-      margin-top: auto !important; /* Tự động bám sát đáy */
-      font-size: 10pt;
-      border-top: 0.5px solid #7c7a7a;
-      padding-top: 2px;
-      margin-bottom: 0;
+      margin-top: auto !important; /* Đẩy chân trang bám sát đáy một cách an toàn */
+      font-size: 9.5pt;
+      border-top: 0.5px solid var(--border-color);
+      padding-top: 4px;
     }
     
     .doc-info td {
       border: none !important;
-      padding: 2px 0;
+      padding: 1px 0;
     }
 
+    /* ==========================================
+       3. OPTIMIZED PRINT ENGINE (IN KHÔNG LỖI)
+       ========================================== */
     @media print {
-      .no-print { display: none !important; }
-      
-      body { 
-        padding: 0; 
-        margin: 0;
+      @page {
+        size: A4 portrait;
+        margin: 0; /* Xóa lề mặc định trình duyệt */
       }
 
-      .page {
-        height: 283mm; /* Tăng chiều cao tối đa cho trang in để chân trang sát mép giấy */
+      html, body {
+        background-color: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
       }
 
-      table.header-table, table, .header-table td, td, th {
-        border-color: #7c7a7a !important;
+      .viewer-toolbar {
+        display: none !important;
       }
-    }
 
-    .page-break {
-      page-break-before: always;
-      break-before: page;
-      height: 0;
-      margin: 0;
-      padding: 0;
-    }
-    /* CSS cho bảng thông tin không viền */
-    .info-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 3px;
-      margin-left: 10px;
-    }
+      .document-container {
+        margin-top: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        display: block !important;
+      }
 
-    .info-table td {
-      border: none !important; /* Xóa viền bảng */
-      padding: 2px 0;
-      vertical-align: middle;
+      .page-canvas {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        padding: 10mm 15mm 10mm 15mm !important; /* Cố định padding an toàn khi in */
+        margin: 0 auto !important;
+        page-break-after: always;
+        break-after: page;
+        box-sizing: border-box !important;
+        overflow: hidden !important; /* Tránh tràn viền đẩy dòng */
+      }
+
+      .page-break {
+        display: block;
+        page-break-before: always;
+        break-before: page;
+        height: 0;
+      }
+
+      table, th, td {
+        border-color: #6d6c6c !important;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Thanh công cụ tùy chọn in -->
-  <div class="no-print">
-    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (Ctrl + P)</button>
-    <span style="margin-left: 20px; font-weight: bold;">Chế độ in:</span>
-    <label style="margin-left: 10px;">
-      <input type="radio" name="printOption" value="both" checked onclick="changePrintMode('both')"> 📄📄 In cả 2 Page (2 Mặt)
-    </label>
-    <label style="margin-left: 10px;">
-      <input type="radio" name="printOption" value="phieu" onclick="changePrintMode('phieu')"> 📄 Chỉ in Page 1
-    </label>
-    <label style="margin-left: 10px;">
-      <input type="radio" name="printOption" value="sotay" onclick="changePrintMode('sotay')"> 📄 Chỉ in Page 2
-    </label>
-  </div>
-
-  <!-- ==================== MẪU 1: PHIẾU KIỂM TRA DUNG MÔI ==================== -->
-  <div id="phieu-template" class="page">
-    <table class="header-table">
-      <tr>
-        <td class="header-logo">
-          <img src="logo.png" alt="HƯNG PHÚ" onerror="this.src='https://via.placeholder.com/100x60?text=H%C6%AFNG+PH%C3%9A'">
-        </td>
-        <td class="header-title">
-          PHIẾU KIỂM TRA MEN IN / DUNG MÔI
-        </td>
-      </tr>
-    </table>
-
-    <div style="margin-top: 5px;">Số: <span id="val-so-1">...</span></div>
-
-    <div class="section-header">I. MÔ TẢ:</div>
-<table class="info-table">
-  <tr>
-    <td style="width: 170px;">- Tên men/dung môi</td>
-    <td style="width: 15px;">:</td>
-    <td><b id="val-mau-men-1">...</b></td>
-    <td style="width: 80px;">Ký hiệu</td>
-    <td style="width: 15px;">:</td>
-    <td><b id="val-ky-hieu-1">...</b></td>
-  </tr>
-  <tr>
-    <td>- Mã số men/ dung môi</td>
-    <td>:</td>
-    <td colspan="4"><span id="val-ma-so-1">...</span></td>
-  </tr>
-  <tr>
-    <td>- Hóa đơn số</td>
-    <td>:</td>
-    <td><span id="val-so-hd-1">...</span></td>
-    <td>Ngày</td>
-    <td>:</td>
-    <td><span id="val-ngay-hd-1">...</span></td>
-  </tr>
-  <tr>
-    <td>- Số lượng</td>
-    <td>:</td>
-    <td colspan="4"><span id="val-sl-1">...</span> Kg</td>
-  </tr>
-  <tr>
-    <td>- Nhà cung ứng</td>
-    <td>:</td>
-    <td colspan="4"><span id="val-ncc-1">...</span></td>
-  </tr>
-  <tr>
-    <td colspan="6">- Tiêu chuẩn vật liệu (QA-SOP 23)</td>
-  </tr>
-</table>
-
-    <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
-    <div style="font-style: italic; margin-bottom: 5px;">
-      Mẫu in: ống 2ml=TQT, in chữ VITAMIN C của VDP. Máy M8 in, t°= 610°C
+  <!-- TOPBAR CANVAS TOOLBAR -->
+  <header class="viewer-toolbar">
+    <div class="toolbar-title">
+      📄 Document Viewer <span>A4 Canvas</span>
     </div>
 
-    <table class="data-table">
-      <thead>
-        <tr class="text-center text-bold">
-          <th style="width: 6%;">STT</th>
-          <th style="width: 20%;">Chỉ tiêu</th>
-          <th style="width: 32%;">Tiêu chuẩn</th>
-          <th style="width: 32%;">Kết quả kiểm tra</th>
-          <th style="width: 10%;">Kết luận</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="text-center">1</td>
-          <td>Tình trạng bao bì</td>
-          <td>Sạch, không bụi, kín.</td>
-          <td>Sạch, không bụi, kín.</td>
-          <td class="text-center">Đạt</td>
-        </tr>
-        <tr>
-          <td class="text-center">2</td>
-          <td>Loại men/dung môi</td>
-          <td><span id="val-loai-men-1a">...</span></td>
-          <td><span id="val-loai-men-1b">...</span></td>
-          <td class="text-center">-</td>
-        </tr>
-        <tr>
-          <td class="text-center">3</td>
-          <td>Trạng thái</td>
-          <td>Lỏng</td>
-          <td>Lỏng</td>
-          <td class="text-center">Đạt</td>
-        </tr>
-        <tr>
-          <td class="text-center">4</td>
-          <td>Màu men/dung môi</td>
-          <td>Vàng nhạt, trong</td>
-          <td>Vàng nhạt, trong</td>
-          <td class="text-center">Đạt</td>
-        </tr>
-        <tr>
-          <td class="text-center">5</td>
-          <td>Nhiệt độ</td>
-          <td>Theo nhiệt độ men</td>
-          <td>Đạt yêu cầu</td>
-          <td class="text-center">Đạt</td>
-        </tr>
-        <tr>
-          <td class="text-center">6</td>
-          <td>Độ bền màu với acid</td>
-          <td>Ngâm trong dung dịch acid acetic 4% trong 2 giờ: Men in không bị mờ, không bị tróc.</td>
-          <td>Men in không bị mờ, không bị tróc.</td>
-          <td class="text-center">Đạt</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="toolbar-controls">
+      <div class="print-mode-group">
+        <button class="btn-mode active" id="btn-both" onclick="changePrintMode('both')">In cả 2 Trang</button>
+        <button class="btn-mode" id="btn-phieu" onclick="changePrintMode('phieu')">Chỉ Trang 1</button>
+        <button class="btn-mode" id="btn-sotay" onclick="changePrintMode('sotay')">Chỉ Trang 2</button>
+      </div>
 
-    <div class="section-header" style="margin-top: 10px;">
-      III. Kết luận: &nbsp;&nbsp;&nbsp;&nbsp; ☐ Đạt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ☐ Không đạt
+      <button class="btn-print" onclick="triggerPrint()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        In / Xuất PDF
+      </button>
     </div>
+  </header>
 
-    <div class="section-header" style="margin-top: 5px;">
-      IV. Biện pháp xử lý: …………………………………………………………………………………………………
-    </div>
+  <!-- CANVAS WORKSPACE -->
+  <main class="document-container">
 
-    <table class="footer-table">
-      <tr>
-        <td style="width: 50%;">
-          <b>KIỂM NGHIỆM VIÊN</b><br><br><br><br>
-          <b id="val-ten-1">...</b>
-        </td>
-        <td style="width: 50%;">
-          Ngày …… tháng …… năm ……<br>
-          <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
-          <b>Nguyễn Thị Bích Tuyền</b>
-        </td>
-      </tr>
-    </table>
-
-    <table class="doc-info">
-      <tr>
-        <td style="width: 33%; text-align: left;">M01/QA-SOP 23</td>
-        <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
-        <td style="width: 33%; text-align: right;">Trang 1/1</td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- THẺ ÉP SANG TRANG MỚI / MẶT SAU -->
-  <div class="page-break"></div>
-
-  <!-- ==================== MẪU 2: SỔ TAY KIỂM TRA DUNG MÔI ==================== -->
-  <div id="sotay-template" class="page">
-    <table class="header-table">
-      <tr>
-        <td class="header-logo">
-          <img src="logo.png" alt="HƯNG PHÚ" onerror="this.src='https://via.placeholder.com/100x60?text=H%C6%AFNG+PH%C3%9A'">
-        </td>
-        <td class="header-title">
-          SỔ TAY KIỂM TRA MEN IN / DUNG MÔI
-        </td>
-      </tr>
-    </table>
-
-    <div style="margin-top: 5px;">Số: <span id="val-so-2">...</span></div>
-
-    <div class="section-header">I. MÔ TẢ:</div>
-<table class="info-table">
-  <tr>
-    <td style="width: 170px;">- Tên men/dung môi</td>
-    <td style="width: 15px;">:</td>
-    <td><b id="val-mau-men-2">...</b></td>
-    <td style="width: 80px;">Ký hiệu</td>
-    <td style="width: 15px;">:</td>
-    <td><b id="val-ky-hieu-2">...</b></td>
-  </tr>
-  <tr>
-    <td>- Mã số men/ dung môi</td>
-    <td>:</td>
-    <td colspan="4"><span id="val-ma-so-2">...</span></td>
-  </tr>
-  <tr>
-    <td colspan="6">- Tiêu chuẩn vật liệu (QA-SOP 23)</td>
-  </tr>
-</table>
-
-    <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
-    <div style="font-style: italic; margin-bottom: 5px;">
-      <b>Mẫu:</b> Pha với men, in thử nghiệm trên ống. Ngâm trong dung dịch acid acetic 4% trong 2 h
-    </div>
-
-    <table class="data-table">
-      <thead>
-        <tr class="text-center text-bold">
-          <th style="width: 8%;">STT</th>
-          <th style="width: 35%;">Chỉ tiêu</th>
-          <th style="width: 57%;">Kết quả kiểm tra</th>
-        </tr>
-      </thead>
-      <tbody>
+    <!-- ==================== PAGE 1: PHIẾU KIỂM TRA DUNG MÔI ==================== -->
+    <article id="phieu-template" class="page-canvas">
+      <table class="header-table">
         <tr>
-          <td class="text-center">1</td>
-          <td>Tình trạng bao bì</td>
-          <td>Sạch, không bụi, kín.</td>
+          <td class="header-logo">
+            <img src="logo.png" alt="HƯNG PHÚ" onerror="this.src='https://via.placeholder.com/100x60?text=H%C6%AFNG+PH%C3%9A'">
+          </td>
+          <td class="header-title">
+            PHIẾU KIỂM TRA MEN IN / DUNG MÔI
+          </td>
+        </tr>
+      </table>
+
+      <div style="margin-top: 2px;">Số: <span id="val-so-1">...</span></div>
+
+      <div class="section-header">I. MÔ TẢ:</div>
+      <table class="info-table">
+        <tr>
+          <td style="width: 25%;">- Tên men/dung môi</td>
+          <td style="width: 2%;">:</td>
+          <td style="width: 38%;"><b id="val-mau-men-1">...</b></td>
+          <td style="width: 15%;">Ký hiệu</td>
+          <td style="width: 2%;">:</td>
+          <td style="width: 18%;"><b id="val-ky-hieu-1">...</b></td>
         </tr>
         <tr>
-          <td class="text-center">2</td>
-          <td>Loại men/dung môi</td>
-          <td><span id="val-loai-men-2">...</span></td>
+          <td>- Mã số men/ dung môi</td>
+          <td>:</td>
+          <td colspan="4"><span id="val-ma-so-1">...</span></td>
         </tr>
         <tr>
-          <td class="text-center">3</td>
-          <td>Trạng thái</td>
-          <td><span id="val-trang-thai-2">Lỏng</span></td>
+          <td>- Hóa đơn số</td>
+          <td>:</td>
+          <td><span id="val-so-hd-1">...</span></td>
+          <td>Ngày</td>
+          <td>:</td>
+          <td><span id="val-ngay-hd-1">...</span></td>
         </tr>
         <tr>
-          <td class="text-center">4</td>
-          <td>Màu men/dung môi</td>
-          <td>Vàng nhạt, trong</td>
+          <td>- Số lượng</td>
+          <td>:</td>
+          <td colspan="4"><span id="val-sl-1">...</span> Kg</td>
         </tr>
         <tr>
-          <td class="text-center">5</td>
-          <td>Nhiệt độ</td>
-          <td><span id="val-nhiet-do-2">...</span></td>
+          <td>- Nhà cung ứng</td>
+          <td>:</td>
+          <td colspan="4"><span id="val-ncc-1">...</span></td>
         </tr>
         <tr>
-          <td class="text-center">6</td>
-          <td>Độ bền màu với acid</td>
-          <td>Men không bị mờ, không bị tróc</td>
+          <td colspan="6">- Tiêu chuẩn vật liệu (QA-SOP 23)</td>
         </tr>
-      </tbody>
-    </table>
+      </table>
 
-    <div class="section-header" style="margin-top: 15px;">
-      Kết luận: &nbsp;&nbsp;&nbsp;&nbsp; ☐ Đạt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ☐ Không đạt
-    </div>
+      <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
+      <div style="font-style: italic; margin-bottom: 4px; font-size: 11pt;">
+        Mẫu in: ống 2<sup>ml</sup>=TQT, in chữ VITAMIN C của VDP. Máy M8 in, t°= 610°C
+      </div>
 
-    <table class="footer-table" style="margin-top: 30px;">
-      <tr>
-        <td style="width: 50%;">
-          <b>KIỂM NGHIỆM VIÊN</b><br><br><br><br>
-          <b id="val-ten-2">...</b>
-        </td>
-        <td style="width: 50%;">
-          Ngày …… tháng …… năm ……<br>
-          <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
-          <b>Nguyễn Thị Bích Tuyền</b>
-        </td>
-      </tr>
-    </table>
+      <table class="data-table">
+        <thead>
+          <tr class="text-center text-bold">
+            <th style="width: 7%;">STT</th>
+            <th style="width: 21%;">Chỉ tiêu</th>
+            <th style="width: 31%;">Tiêu chuẩn</th>
+            <th style="width: 31%;">Kết quả kiểm tra</th>
+            <th style="width: 10%;">Kết luận</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center">1</td>
+            <td>Tình trạng bao bì</td>
+            <td>Sạch, không bụi, kín</td>
+            <td>Sạch, không bụi, kín</td>
+            <td class="text-center">Đạt</td>
+          </tr>
+          <tr>
+            <td class="text-center">2</td>
+            <td>Loại men/dung môi</td>
+            <td><span id="val-loai-men-1a">...</span></td>
+            <td><span id="val-loai-men-1b">...</span></td>
+            <td class="text-center">Đạt</td>
+          </tr>
+          <tr>
+            <td class="text-center">3</td>
+            <td>Trạng thái</td>
+            <td>Lỏng</td>
+            <td>Lỏng</td>
+            <td class="text-center">Đạt</td>
+          </tr>
+          <tr>
+            <td class="text-center">4</td>
+            <td>Màu men/dung môi</td>
+            <td>Vàng nhạt, trong</td>
+            <td>Vàng nhạt, trong</td>
+            <td class="text-center">Đạt</td>
+          </tr>
+          <tr>
+            <td class="text-center">5</td>
+            <td>Nhiệt độ</td>
+            <td>Theo nhiệt độ men</td>
+            <td>Đạt yêu cầu</td>
+            <td class="text-center">Đạt</td>
+          </tr>
+          <tr>
+            <td class="text-center">6</td>
+            <td>Độ bền màu với acid</td>
+            <td>Ngâm trong dung dịch acid acetic 4% trong 2 giờ: Men in không bị mờ, không bị tróc.</td>
+            <td>Men in không bị mờ, không bị tróc.</td>
+            <td class="text-center">Đạt</td>
+          </tr>
+        </tbody>
+      </table>
 
-    <table class="doc-info">
-      <tr>
-        <td style="width: 33%; text-align: left;">M07/QA-SOP 23</td>
-        <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
-        <td style="width: 33%; text-align: right;">Trang 1/1</td>
-      </tr>
-    </table>
-  </div>
+      <div class="section-header" style="margin-top: 10px;">
+        III. Kết luận: &nbsp;&nbsp;&nbsp;&nbsp; ☐ Đạt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ☐ Không đạt
+      </div>
 
-  <!-- SCRIPT ĐỌC DỮ LIỆU TỪ URL VÀ ĐỊNH DẠNG NGÀY THÁNG -->
+      <div class="section-header" style="margin-top: 4px;">
+        IV. Biện pháp xử lý: …………………………………………………………………
+      </div>
+
+      <table class="footer-table">
+        <tr>
+          <td style="width: 50%;"><br>
+            <b>KIỂM NGHIỆM VIÊN</b><br><br><br><br>
+            <b id="val-ten-1">...</b>
+          </td>
+          <td style="width: 50%;">
+            Ngày …… tháng …… năm ……<br>
+            <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
+            <b>Nguyễn Thị Bích Tuyền</b>
+          </td>
+        </tr>
+      </table>
+
+      <table class="doc-info">
+        <tr>
+          <td style="width: 33%; text-align: left;">M01/QA-SOP 23</td>
+          <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
+          <td style="width: 33%; text-align: right;">Trang 1/1</td>
+        </tr>
+      </table>
+    </article>
+
+    <div class="page-break"></div>
+
+    <!-- ==================== PAGE 2: SỔ TAY KIỂM TRA DUNG MÔI ==================== -->
+    <article id="sotay-template" class="page-canvas">
+      <table class="header-table">
+        <tr>
+          <td class="header-logo">
+            <img src="logo.png" alt="HƯNG PHÚ" onerror="this.src='https://via.placeholder.com/100x60?text=H%C6%AFNG+PH%C3%9A'">
+          </td>
+          <td class="header-title">
+            SỔ TAY KIỂM TRA MEN IN / DUNG MÔI
+          </td>
+        </tr>
+      </table>
+
+      <div style="margin-top: 2px;">Số: <span id="val-so-2">...</span></div>
+
+      <div class="section-header">I. MÔ TẢ:</div>
+      <table class="info-table">
+        <tr>
+          <td style="width: 25%;">- Tên men/dung môi</td>
+          <td style="width: 2%;">:</td>
+          <td style="width: 38%;"><b id="val-mau-men-2">...</b></td>
+          <td style="width: 15%;">Ký hiệu</td>
+          <td style="width: 2%;">:</td>
+          <td style="width: 18%;"><b id="val-ky-hieu-2">...</b></td>
+        </tr>
+        <tr>
+          <td>- Mã số men/ dung môi</td>
+          <td>:</td>
+          <td colspan="4"><span id="val-ma-so-2">...</span></td>
+        </tr>
+        <tr>
+          <td colspan="6">- Tiêu chuẩn vật liệu (QA-SOP 23)</td>
+        </tr>
+      </table>
+
+      <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
+      <div style="font-style: italic; margin-bottom: 4px; font-size: 11pt;">
+        <b>Mẫu:</b> Pha với men, in thử nghiệm trên ống. Ngâm trong dung dịch acid acetic 4% trong 2 giờ.
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr class="text-center text-bold">
+            <th style="width: 8%;">STT</th>
+            <th style="width: 35%;">Chỉ tiêu</th>
+            <th style="width: 57%;">Kết quả kiểm tra</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center">1</td>
+            <td>Tình trạng bao bì</td>
+            <td>Sạch, không bụi, kín.</td>
+          </tr>
+          <tr>
+            <td class="text-center">2</td>
+            <td>Loại men/dung môi</td>
+            <td><span id="val-loai-men-2">...</span></td>
+          </tr>
+          <tr>
+            <td class="text-center">3</td>
+            <td>Trạng thái</td>
+            <td>Lỏng</td>
+          </tr>
+          <tr>
+            <td class="text-center">4</td>
+            <td>Màu men/dung môi</td>
+            <td>Vàng nhạt, trong</td>
+          </tr>
+          <tr>
+            <td class="text-center">5</td>
+            <td>Nhiệt độ</td>
+            <td>Theo nhiệt độ men</td>
+          </tr>
+          <tr>
+            <td class="text-center">6</td>
+            <td>Độ bền màu với acid</td>
+            <td>Men in không bị mờ, không bị tróc.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-header" style="margin-top: 10px;">
+        Kết luận: &nbsp;&nbsp;&nbsp;&nbsp; ☐ Đạt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ☐ Không đạt
+      </div>
+
+      <table class="footer-table" style="margin-top: 20px;">
+        <tr>
+          <td style="width: 50%;"><br>
+            <b>KIỂM NGHIỆM VIÊN</b><br><br><br><br>
+            <b id="val-ten-2">...</b>
+          </td>
+          <td style="width: 50%;">
+            Ngày …… tháng …… năm ……<br>
+            <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
+            <b>Nguyễn Thị Bích Tuyền</b>
+          </td>
+        </tr>
+      </table>
+
+      <table class="doc-info">
+        <tr>
+          <td style="width: 33%; text-align: left;">M07/QA-SOP 23</td>
+          <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
+          <td style="width: 33%; text-align: right;">Trang 1/1</td>
+        </tr>
+      </table>
+    </article>
+
+  </main>
+
+  <!-- CONTROL LOGIC SCRIPT -->
   <script>
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -456,7 +604,6 @@
       return '...';
     }
 
-    // Hàm tự động đảo MM/DD/YYYY thành DD/MM/YYYY chuẩn
     function formatDate(dateStr) {
       if (!dateStr || dateStr === '...') return '...';
       const parts = dateStr.split('/');
@@ -477,19 +624,20 @@
       const maSo = getQueryParam('ma_so');
       const soHd = getQueryParam('so_hd');
       const rawNgayHd = getQueryParam('ngay_hd');
-      const ngayHd = formatDate(rawNgayHd); // Ép kiểu Ngày/Tháng/Năm
+      const ngayHd = formatDate(rawNgayHd);
       const sl = getQueryParam('sl');
       const ncc = getQueryParam('ncc');
       const loaiMen = getQueryParam('loai_men');
       const nhietDo = getQueryParam('nhiet_do');
-      const trangThai = getQueryParam('trang_thai');
       const ten = getQueryParam('ten');
 
-      const soPhieu = stt + '-' + year + '/CL';
+      const soPhieu = (stt !== '...' && year !== '...') ? `${stt}-${year}/CL` : '...';
 
-      // Gán Page 1
+      // Mapping Data Trang 1
       if(document.getElementById('val-so-1')) document.getElementById('val-so-1').innerText = soPhieu;
       if(document.getElementById('val-mau-men-1')) document.getElementById('val-mau-men-1').innerText = mauMen;
+      if(document.getElementById('val-mau-men-1a')) document.getElementById('val-mau-men-1a').innerText = mauMen;
+      if(document.getElementById('val-mau-men-1b')) document.getElementById('val-mau-men-1b').innerText = mauMen;
       if(document.getElementById('val-ky-hieu-1')) document.getElementById('val-ky-hieu-1').innerText = kyHieu;
       if(document.getElementById('val-ma-so-1')) document.getElementById('val-ma-so-1').innerText = maSo;
       if(document.getElementById('val-so-hd-1')) document.getElementById('val-so-hd-1').innerText = soHd;
@@ -498,53 +646,56 @@
       if(document.getElementById('val-ncc-1')) document.getElementById('val-ncc-1').innerText = ncc;
       if(document.getElementById('val-loai-men-1a')) document.getElementById('val-loai-men-1a').innerText = loaiMen;
       if(document.getElementById('val-loai-men-1b')) document.getElementById('val-loai-men-1b').innerText = loaiMen;
+      if(document.getElementById('val-nhiet-do-1')) document.getElementById('val-nhiet-do-1').innerText = nhietDo;
       if(document.getElementById('val-ten-1')) document.getElementById('val-ten-1').innerText = ten;
 
-      // Gán Page 2
+      // Mapping Data Trang 2
       if(document.getElementById('val-so-2')) document.getElementById('val-so-2').innerText = soPhieu;
       if(document.getElementById('val-mau-men-2')) document.getElementById('val-mau-men-2').innerText = mauMen;
+      if(document.getElementById('val-mau-men-2a')) document.getElementById('val-mau-men-2a').innerText = mauMen;
       if(document.getElementById('val-ky-hieu-2')) document.getElementById('val-ky-hieu-2').innerText = kyHieu;
       if(document.getElementById('val-ma-so-2')) document.getElementById('val-ma-so-2').innerText = maSo;
       if(document.getElementById('val-loai-men-2')) document.getElementById('val-loai-men-2').innerText = loaiMen;
-      if(document.getElementById('val-trang-thai-2')) document.getElementById('val-trang-thai-2').innerText = (trangThai !== '...' && trangThai !== '') ? trangThai : 'Lỏng';
-      if(document.getElementById('val-nhiet-do-2')) document.getElementById('val-nhiet-do-2').innerText = nhietDo;
+      if(document.getElementById('val-trang-thai-2')) document.getElementById('val-trang-thai-2').innerText = 'Bột khô, không vón cục, không ướt.';
       if(document.getElementById('val-ten-2')) document.getElementById('val-ten-2').innerText = ten;
     }
 
-    // Hàm gọi lệnh in khi bấm nút "In Ngay"
     function triggerPrint() {
-      try {
-        window.print();
-      } catch (e) {
-        alert("Trình duyệt đang chặn cửa sổ in. Bạn vui lòng bấm Ctrl + P để in nhé!");
-      }
+      window.print();
     }
 
-    // Hàm đổi chế độ hiển thị - GIỮ NGUYÊN KIỂU FLEX HỢP LỆ ĐỂ CHÂN TRANG KHÔNG BỊ TRỎI
     function changePrintMode(mode) {
       const phieu = document.getElementById('phieu-template');
       const sotay = document.getElementById('sotay-template');
       const pageBreak = document.querySelector('.page-break');
+      
+      const btnBoth = document.getElementById('btn-both');
+      const btnPhieu = document.getElementById('btn-phieu');
+      const btnSotay = document.getElementById('btn-sotay');
+
+      [btnBoth, btnPhieu, btnSotay].forEach(btn => btn.classList.remove('active'));
 
       if (mode === 'both') {
         phieu.style.display = 'flex';
         sotay.style.display = 'flex';
         if (pageBreak) pageBreak.style.display = 'block';
+        btnBoth.classList.add('active');
       } else if (mode === 'phieu') {
         phieu.style.display = 'flex';
         sotay.style.display = 'none';
         if (pageBreak) pageBreak.style.display = 'none';
+        btnPhieu.classList.add('active');
       } else if (mode === 'sotay') {
         phieu.style.display = 'none';
         sotay.style.display = 'flex';
         if (pageBreak) pageBreak.style.display = 'none';
+        btnSotay.classList.add('active');
       }
     }
 
-    // Tự động điền dữ liệu và khởi tạo chế độ in khi vừa load trang
     window.addEventListener('DOMContentLoaded', function() {
-      fillData(); // Điền dữ liệu từ URL
-      changePrintMode('both'); // Mặc định mở cả 2 mẫu để sẵn sàng in 2 mặt
+      fillData();
+      changePrintMode('both');
     });
   </script>
 </body>
