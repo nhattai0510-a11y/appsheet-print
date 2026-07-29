@@ -4,171 +4,284 @@
   <meta charset="UTF-8">
   <title>Phiếu Kiểm Tra Túi PP / Màng Co - Màu Trắng</title>
   <style>
-    @page { size: A4 portrait; margin: 8mm 10mm 5mm 10mm; }
-    * { box-sizing: border-box; }
-    body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.2; margin: 0; padding: 0; color: #000; }
-    .page { display: flex; flex-direction: column; min-height: 280mm; box-sizing: border-box; }
-    .no-print { background: #f0f0f0; padding: 10px; margin-bottom: 20px; border-bottom: 0.5px solid #7c7a7a; text-align: center; }
-    .btn { padding: 8px 16px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; }
-    table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-    th, td { border: 0.5px solid #7c7a7a; padding: 5px 6px; vertical-align: middle; }
-    .header-table { width: 100%; border-collapse: collapse; border: 0.5px solid #7c7a7a; margin-bottom: 10px; }
-    .header-table td { border: 0.5px solid #7c7a7a; padding: 8px 10px; vertical-align: middle; }
-    .header-logo { width: 20%; text-align: center; }
-    .header-logo img { max-height: 65px; width: auto; display: block; margin: 0 auto; }
-    .header-title { width: 80%; font-size: 16pt; font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
-    .section-header { font-weight: bold; margin-top: 8px; }
-    .text-center { text-align: center; }
-    .text-bold { font-weight: bold; }
-    .footer-table { margin-top: 15px; border: none; }
-    .footer-table td { border: none; text-align: center; }
-    .doc-info { width: 100%; margin-top: auto; font-size: 10pt; border-top: 0.5px solid #7c7a7a; padding-top: 2px; margin-bottom: 0; }
-    .doc-info td { border: none !important; padding: 2px 0; }
-    @media print {
-      .no-print { display: none !important; }
-      body { padding: 0; margin: 0; }
-      .page { height: 283mm; }
-      table.header-table, table, .header-table td, td, th { border-color: #7c7a7a !important; }
+  @page { 
+    size: A4 portrait; 
+    margin: 0; margin-left: 8mm;
+  }
+  * { box-sizing: border-box; }
+  :root { 
+    --bg-viewer: #e2e8f0; 
+    --paper-bg: #ffffff; 
+    --text-color: #000000; 
+    --border-color: #7c7a7a; 
+  }
+  body.dark-mode { --bg-viewer: #0f172a; }
+
+  body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 11pt;
+    line-height: 1.15;
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    background-color: var(--bg-viewer);
+    transition: background-color 0.3s ease;
+  }
+
+  /* Fixed Modern Toolbar */
+  .app-toolbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 55px;
+    background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex;
+    align-items: center; justify-content: space-between; padding: 0 24px; z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  body.dark-mode .app-toolbar { background: rgba(30, 41, 59, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #fff; }
+  .toolbar-title { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .toolbar-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-ui { font-family: system-ui, -apple-system, sans-serif; padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: #2563eb; color: #ffffff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #f1f5f9; color: #334155; }
+  body.dark-mode .btn-secondary { background: #334155; color: #f8fafc; }
+
+  /* Paper Viewer Canvas */
+  .viewer-container { 
+    padding-top: 70px; 
+    padding-bottom: 20px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; 
+    min-height: 100vh; 
+    overflow-x: auto; 
+  }
+
+  /* Tờ giấy A4 xem trên Web */
+  .page {
+    background: var(--paper-bg);
+    width: 210mm;
+    height: 297mm;
+    padding: 10mm 12mm 8mm 12mm;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    transform-origin: top center;
+    transition: transform 0.2s ease;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    overflow: hidden;
+  }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  th, td { border: 0.5px solid var(--border-color); padding: 4px 6px; vertical-align: middle; }
+  .header-table { width: 100%; border-collapse: collapse; border: 0.5px solid var(--border-color); margin-bottom: 8px; }
+  .header-table td { border: 0.5px solid var(--border-color); padding: 6px; vertical-align: middle; }
+  .header-logo { width: 20%; text-align: center; }
+  .header-logo img { max-height: 55px; width: auto; display: block; margin: 0 auto; }
+  .header-title { width: 80%; font-size: 15pt; font-weight: bold; text-align: center; text-transform: uppercase; }
+  .section-header { font-weight: bold; margin-top: 6px; }
+  .text-center { text-align: center; }
+  .text-bold { font-weight: bold; }
+  .footer-table { margin-top: 12px; border: none; }
+  .footer-table td { border: none; text-align: center; }
+  
+  /* Chân trang M01/QA-SOP 24 luôn nằm dưới đáy */
+  .doc-info {
+    width: 100%;
+    margin-top: auto !important;
+    font-size: 9.5pt;
+    border-top: 0.5px solid var(--border-color);
+    padding-top: 4px;
+    margin-bottom: 0;
+  }
+  .doc-info td { border: none !important; padding: 0.5px 0; }
+
+  .info-table { width: 100%; border-collapse: collapse; margin-top: 2px; margin-left: 10px; }
+  .info-table td { border: none !important; padding: 2px 0; vertical-align: middle; }
+
+  /* CSS dành riêng cho máy in / xuất PDF */
+  @media print {
+    html, body { 
+      width: 210mm; 
+      height: 297mm; 
+      overflow: hidden !important; 
+      background: #fff !important; 
+      margin: 0 !important; 
+      padding: 0 !important; 
     }
-    .info-table { width: 100%; border-collapse: collapse; margin-top: 3px; margin-left: 10px; }
-    .info-table td { border: none !important; padding: 2px 0; vertical-align: middle; }
-  </style>
+    .no-print, .app-toolbar { display: none !important; }
+    .viewer-container { padding: 0 !important; margin: 0 !important; display: block !important; min-height: auto !important; }
+    
+    .page {
+      width: 210mm !important;
+      height: 297mm !important;
+      min-height: 297mm !important;
+      max-height: 297mm !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      padding: 10mm 12mm 8mm 12mm !important;
+      transform: none !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      overflow: hidden !important;
+      page-break-after: avoid !important;
+      page-break-inside: avoid !important;
+    }
+    table.header-table, table, .header-table td, td, th { border-color: #7c7a7a !important; }
+  }
+</style>
 </head>
 <body>
-
-  <div class="no-print">
-    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (Ctrl + P)</button>
+  <div class="app-toolbar no-print">
+    <div class="toolbar-title">📄 Xem trước: <span>Phiếu Kiểm Tra Túi PP / Màng Co - Trắng</span></div>
+    <div class="toolbar-actions">
+      <button class="btn-ui btn-secondary" onclick="zoomPage(-0.1)">➖ Thu nhỏ</button>
+      <button class="btn-ui btn-secondary" onclick="zoomPage(0.1)">➕ Phóng to</button>
+      <button class="btn-ui btn-secondary" onclick="toggleDarkMode()">🌓 Giao diện</button>
+      <button class="btn-ui btn-primary" onclick="triggerPrint()">🖨️ In / Xuất PDF (Ctrl + P)</button>
+    </div>
   </div>
 
-  <div id="phieu-template" class="page">
-    <table class="header-table">
-      <tr>
-        <td class="header-logo">
-          <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/100x60?text=LOGO'">
-        </td>
-        <td class="header-title">PHIẾU KIỂM TRA BAO BÌ</td>
-      </tr>
-    </table>
-
-    <div style="margin-top: 5px;">Số: <span id="val-so">...</span></div>
-
-    <div class="section-header">I. MÔ TẢ:</div>
-    <table class="info-table">
-      <tr>
-        <td style="width: 140px;">- Tên bao bì</td>
-        <td style="width: 15px;">:</td>
-        <td colspan="4"><b id="val-vat-lieu">...</b></td>
-      </tr>
-      <tr>
-        <td>- Mã số</td>
-        <td>:</td>
-        <td colspan="4"><b id="val-ma-so">...</b></td>
-      </tr>
-      <tr>
-        <td>- Hóa đơn số</td>
-        <td>:</td>
-        <td style="width: 200px;"><span id="val-so-hd">...</span></td>
-        <td style="width: 60px;">Ngày</td>
-        <td style="width: 15px;">:</td>
-        <td><span id="val-ngay-hd">...</span></td>
-      </tr>
-      <tr>
-        <td>- Nhà cung ứng</td>
-        <td>:</td>
-        <td colspan="4"><span id="val-ncc">...</span></td>
-      </tr>
-      <tr>
-        <td colspan="6">- Tiêu chuẩn bao bì (QA-SOP 24)</td>
-      </tr>
-    </table>
-
-    <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
-    <div style="font-weight: bold; margin-bottom: 3px;">Bao bì cấp 1 (túi PP, màng co, nylon,...)</div>
-
-    <table>
-      <thead>
-        <tr class="text-center text-bold">
-          <th style="width: 6%;">STT</th>
-          <th style="width: 20%;">Chỉ tiêu</th>
-          <th style="width: 32%;">Tiêu chuẩn</th>
-          <th style="width: 32%;">Kết quả kiểm tra</th>
-          <th style="width: 10%;">Kết luận</th>
-        </tr>
-      </thead>
-      <tbody>
+  <div class="viewer-container">
+    <div id="phieu-template" class="page">
+      <table class="header-table">
         <tr>
-          <td class="text-center">1</td>
-          <td class="text-bold">Ngoại quan</td>
-          <td>- Đúng thông tin theo hóa đơn<br>- Sạch, không bụi, đóng gói kín</td>
-          <td>- Thông tin đúng với hóa đơn của NCC<br>- Bao bì sạch, không bụi, không có vật lạ</td>
-          <td class="text-center" id="val-ket-luan-1">...</td>
+          <td class="header-logo"><img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/100x50?text=LOGO'"></td>
+          <td class="header-title">PHIẾU KIỂM TRA BAO BÌ</td>
+        </tr>
+      </table>
+
+      <div style="margin-top: 2px;">Số: <span id="val-so">...</span></div>
+
+      <div class="section-header">I. MÔ TẢ:</div>
+      <table class="info-table">
+        <tr>
+          <td style="width: 130px;">- Tên bao bì</td>
+          <td style="width: 15px;">:</td>
+          <td colspan="4"><b id="val-vat-lieu">...</b></td>
         </tr>
         <tr>
-          <td class="text-center">2</td>
-          <td class="text-bold">Màu sắc</td>
-          <td>- Đúng với yêu cầu mua hàng theo hóa đơn (Trắng/ Xanh)</td>
-          <td>- Trắng</td>
-          <td class="text-center" id="val-ket-luan-2">...</td>
+          <td>- Mã số</td>
+          <td>:</td>
+          <td colspan="4"><b id="val-ma-so">...</b></td>
         </tr>
         <tr>
-          <td class="text-center">3</td>
-          <td class="text-bold">Độ khớp/ Độ kín</td>
-          <td>- Các mối ép phải kín, không rách, không hở (Không áp dụng cho Tấm PP)</td>
-          <td>
-            - Bao bì nhẵn, không có bavia dư tại các đường ép khuôn.<br>
-            - Các mối ép kín, không rách, không hở
+          <td>- Hóa đơn số</td>
+          <td>:</td>
+          <td style="width: 180px;"><span id="val-so-hd">...</span></td>
+          <td style="width: 50px;">Ngày</td>
+          <td style="width: 15px;">:</td>
+          <td><span id="val-ngay-hd">...</span></td>
+        </tr>
+        <tr>
+          <td>- Nhà cung ứng</td>
+          <td>:</td>
+          <td colspan="4"><span id="val-ncc">...</span></td>
+        </tr>
+        <tr>
+          <td colspan="6">- Tiêu chuẩn bao bì (QA-SOP 24)</td>
+        </tr>
+      </table>
+
+      <div class="section-header">II. NỘI DUNG KIỂM TRA</div>
+      <div style="font-weight: bold; margin-bottom: 2px;">Bao bì cấp 1 (túi PP, màng co, nylon,...)</div>
+
+      <table>
+        <thead>
+          <tr class="text-center text-bold">
+            <th style="width: 6%;">STT</th>
+            <th style="width: 20%;">Chỉ tiêu</th>
+            <th style="width: 32%;">Tiêu chuẩn</th>
+            <th style="width: 32%;">Kết quả kiểm tra</th>
+            <th style="width: 10%;">Kết luận</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center">1</td>
+            <td class="text-bold">Ngoại quan</td>
+            <td>- Đúng thông tin theo hóa đơn<br>- Sạch, không bụi, đóng gói kín</td>
+            <td>- Thông tin đúng với hóa đơn của NCC<br>- Bao bì sạch, không bụi, không có vật lạ</td>
+            <td class="text-center" id="val-ket-luan-1">...</td>
+          </tr>
+          <tr>
+            <td class="text-center">2</td>
+            <td class="text-bold">Màu sắc</td>
+            <td>- Đúng với yêu cầu mua hàng theo hóa đơn (Trắng/ Xanh)</td>
+            <td>- Trắng</td>
+            <td class="text-center" id="val-ket-luan-2">...</td>
+          </tr>
+          <tr>
+            <td class="text-center">3</td>
+            <td class="text-bold">Độ khớp/ Độ kín</td>
+            <td>- Các mối ép phải kín, không rách, không hở (Không áp dụng cho Tấm PP)</td>
+            <td>
+              - Bao bì nhẵn, không có bavia dư tại các đường ép khuôn.<br>
+              - Các mối ép kín, không rách, không hở
+            </td>
+            <td class="text-center" id="val-ket-luan-3">...</td>
+          </tr>
+          <tr>
+            <td class="text-center">4</td>
+            <td class="text-bold">Loại bao bì</td>
+            <td>- Túi PP/ Màng co/ Tấm PP</td>
+            <td>- <span id="val-vat-lieu-4">...</span></td>
+            <td class="text-center" id="val-ket-luan-4">...</td>
+          </tr>
+          <tr>
+            <td class="text-center">5</td>
+            <td class="text-bold">Kích thước</td>
+            <td>- Đúng kích thước theo PL01/QA-SOP 24</td>
+            <td>- <span id="val-kq-kt">...</span></td>
+            <td class="text-center" id="val-ket-luan-5">...</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-header" style="margin-top: 8px;">
+        III. KẾT LUẬN: &nbsp;&nbsp;&nbsp;&nbsp; ▢ ĐẠT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ▢ KHÔNG ĐẠT
+      </div>
+
+      <div class="section-header" style="margin-top: 4px;">
+        IV. BIỆN PHÁP XỬ LÝ: ……………………………………………………………………………
+      </div>
+
+      <table class="footer-table">
+        <tr>
+          <td style="width: 50%;"><br>
+            <b>KIỂM NGHIỆM VIÊN</b><br><br><br><br>
+            <b id="val-ten">...</b>
           </td>
-          <td class="text-center" id="val-ket-luan-3">...</td>
+          <td style="width: 50%;">
+            Ngày …… tháng …… năm ……<br>
+            <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
+            <b>Nguyễn Thị Bích Tuyền</b>
+          </td>
         </tr>
+      </table>
+
+      <table class="doc-info">
         <tr>
-          <td class="text-center">4</td>
-          <td class="text-bold">Loại bao bì</td>
-          <td>- Túi PP/ Màng co/ Tấm PP</td>
-          <td>- <span id="val-vat-lieu-4">...</span></td>
-          <td class="text-center" id="val-ket-luan-4">...</td>
+          <td style="width: 33%; text-align: left;">M01/QA-SOP 24</td>
+          <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
+          <td style="width: 33%; text-align: right;">Trang 1/1</td>
         </tr>
-        <tr>
-          <td class="text-center">5</td>
-          <td class="text-bold">Kích thước</td>
-          <td>- Đúng kích thước theo PL01/QA-SOP 24</td>
-          <td>- <span id="val-kq-kt">...</span></td>
-          <td class="text-center" id="val-ket-luan-5">...</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="section-header" style="margin-top: 10px;">
-      III. KẾT LUẬN: &nbsp;&nbsp;&nbsp;&nbsp; ▢ ĐẠT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ▢ KHÔNG ĐẠT
+      </table>
     </div>
-
-    <div class="section-header" style="margin-top: 5px;">
-      IV. BIỆN PHÁP XỬ LÝ: ……………………………………………………………………………
-    </div>
-
-    <table class="footer-table">
-      <tr>
-        <td style="width: 50%;">
-          <b>KIỂM NGHIỆM VIÊN</b><br><br><br><br>
-          <b id="val-ten">...</b>
-        </td>
-        <td style="width: 50%;">
-          Ngày …… tháng …… năm ……<br>
-          <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
-          <b>Nguyễn Thị Bích Tuyền</b>
-        </td>
-      </tr>
-    </table>
-
-    <table class="doc-info">
-      <tr>
-        <td style="width: 33%; text-align: left;">M01/QA-SOP 24</td>
-        <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
-        <td style="width: 33%; text-align: right;">Trang 1/1</td>
-      </tr>
-    </table>
   </div>
 
   <script>
+    let currentScale = 1;
+    function zoomPage(delta) {
+      currentScale = Math.min(Math.max(0.5, currentScale + delta), 1.5);
+      const page = document.getElementById('phieu-template');
+      if (page) page.style.transform = `scale(${currentScale})`;
+    }
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       for (let [key, value] of urlParams.entries()) {
@@ -178,16 +291,12 @@
       }
       return '...';
     }
-
     function formatDate(dateStr) {
       if (!dateStr || dateStr === '...') return '...';
       const parts = dateStr.split('/');
-      if (parts.length === 3) {
-        return `${parts[1].padStart(2, '0')}/${parts[0].padStart(2, '0')}/${parts[2]}`;
-      }
+      if (parts.length === 3) return `${parts[1].padStart(2, '0')}/${parts[0].padStart(2, '0')}/${parts[2]}`;
       return dateStr;
     }
-
     function fillData() {
       const stt = getQueryParam('stt');
       const year = getQueryParam('year');
@@ -199,7 +308,6 @@
       const kqKt = getQueryParam('kq_kt');
       const ketLuan = getQueryParam('ket_luan');
       const ten = getQueryParam('ten');
-
       const soPhieu = stt + '-' + year + '/CL';
 
       if(document.getElementById('val-so')) document.getElementById('val-so').innerText = soPhieu;
@@ -218,7 +326,6 @@
       if(document.getElementById('val-ket-luan-4')) document.getElementById('val-ket-luan-4').innerText = ketLuan;
       if(document.getElementById('val-ket-luan-5')) document.getElementById('val-ket-luan-5').innerText = ketLuan;
     }
-
     function triggerPrint() { try { window.print(); } catch (e) { alert("Bấm Ctrl + P để in!"); } }
     window.addEventListener('DOMContentLoaded', fillData);
   </script>
