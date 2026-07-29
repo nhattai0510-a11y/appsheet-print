@@ -2,101 +2,188 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Nhãn Men / Dung Môi - Khổ Ngang 6 Nhãn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Viewer - Nhãn Men / Dung Môi (Khổ Ngang)</title>
   <style>
-    * {
-      box-sizing: border-box;
+    /* ==========================================
+       1. CORE SYSTEM & CANVAS STYLES (UI/UX)
+       ========================================== */
+    :root {
+      --bg-canvas: #c0d4e3;
+      --bg-page: #ffffff;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --border-color: #616060;
+      --text-main: #1f2937;
+      --toolbar-height: 56px;
     }
 
-    @page {
-      size: A4 landscape; /* Khổ giấy A4 NGANG */
-      margin: 5mm 5mm;   /* Lề căn chỉnh đẹp mắt */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      font-family: "Times New Roman", Times, serif;
-      font-size: 11pt;    /* Tăng font chữ to rõ hơn */
-      line-height: 1.2;
-      margin: 0;
-      padding: 0;
-      color: #000;
-      background: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .no-print {
-      background: #f0f0f0;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-bottom: 1px solid #ccc;
-      text-align: center;
+    /* Fixed Modern Toolbar */
+    .viewer-toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--toolbar-height);
+      background-color: #1e293b;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
 
-    .btn {
-      padding: 8px 18px;
-      background: #007bff;
-      color: #fff;
-      border: none;
+    .toolbar-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e2e8f0;
+    }
+
+    .toolbar-title span {
+      background: #334155;
+      padding: 2px 8px;
       border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
+      font-size: 11px;
+      color: #94a3b8;
     }
 
-    /* Bố cục 2 Cột x 3 Hàng = 6 Nhãn / Trang A4 Ngang */
+    .toolbar-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-print {
+      background: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .btn-print:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Document Canvas Container */
+    .document-container {
+      margin-top: var(--toolbar-height);
+      padding: 30px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      overflow-y: auto;
+    }
+
+    /* Canvas Page Frame (A4 Landscape Visual) */
+    .page-canvas {
+      width: 297mm;
+      height: 210mm;
+      background-color: var(--bg-page);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+      border-radius: 2px;
+      padding: 8mm 8mm;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      font-family: "Times New Roman", Times, serif;
+      font-size: 11pt;
+      line-height: 1.2;
+      color: #000000;
+      box-sizing: border-box;
+    }
+
+    /* ==========================================
+       2. LABELS GRID & CARD STRUCTURES
+       ========================================== */
     .labels-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr; /* Chia 2 cột rộng rãi */
-      gap: 25px 25px;                 /* KHOẢNG CÁCH GIỮA CÁC NHÃN */
+      grid-template-columns: 1fr 1fr;
+      gap: 15px 20px;
       width: 100%;
+      height: 100%;
     }
 
-    /* Khung từng nhãn đơn */
     .label-card {
-      border: 0.5px solid #616060;
-      padding: 4px 6px;
+      border: 0.5px solid var(--border-color);
+      padding: 6px 8px;
       background: #fff;
-      height: auto;
-      position: relative; /* Thêm dòng này để làm gốc định vị cho hình vuông */
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
     }
-    /* Ô hình vuông 2x2cm nằm góc dưới bên phải */
+
+    /* Ô hình vuông thử màu nằm góc dưới bên phải */
     .color-box {
       width: 1.5cm;
       height: 1.5cm;
-      border: 0.5px solid #616060; /* Viền ô hình vuông */
+      border: 0.5px solid var(--border-color);
       position: absolute;
-      right: 8px;   /* Căn từ mép phải vào */
-      bottom: 25px;  /* Căn từ mép dưới (ngay trên dòng chân trang) lên */
+      right: 10px;
+      bottom: 30px;
       background: #fff;
     }
+
     /* Bảng tiêu đề nhãn */
     .label-header {
-      width: 99.8%;
+      width: 100%;
       border-collapse: collapse;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     .label-header td {
-      border: 0.5px solid #616060;
-      padding: 10px 3px;
+      border: 0.5px solid var(--border-color);
+      padding: 4px 3px;
       vertical-align: middle;
     }
 
     .logo-cell {
-      width: 15%;
+      width: 22%;
       text-align: center;
     }
 
     .logo-cell img {
-      max-height: 35px;
+      max-height: 32px;
       width: auto;
       display: block;
       margin: 0 auto;
     }
 
     .title-cell {
-      width: 85%;
+      width: 78%;
       font-weight: bold;
-      font-size: 10.5pt;
+      font-size: 11pt;
       text-align: center;
       text-transform: uppercase;
     }
@@ -105,23 +192,22 @@
     .label-body {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     .label-body td {
-      border: 0.5px solid #616060; /* Đường kẻ viền mảnh */
-      padding: 2px 5px;
+      border: 0.5px solid var(--border-color);
+      padding: 3px 6px;
       vertical-align: middle;
     }
 
-    /* ĐIỀU CHỈNH KÍCH THƯỚC CỘT THEO YÊU CẦU */
     .label-body tr td:first-child {
-      width: 38%; /* Cố định Cột 1 vừa đủ chữ */
+      width: 38%;
       white-space: nowrap;
     }
 
     .label-body tr td:last-child {
-      width: 62%; /* Mở rộng Cột 2 để chứa dữ liệu thoải mái */
+      width: 62%;
       word-break: break-word;
     }
 
@@ -133,8 +219,8 @@
     .label-footer {
       width: 100%;
       font-size: 8pt;
-      border-top: 0.5px solid #616060;
-      padding-top: 3px;
+      border-top: 0.5px solid var(--border-color);
+      padding-top: 2px;
       border-collapse: collapse;
     }
 
@@ -143,33 +229,80 @@
       padding: 0;
     }
 
+    /* ==========================================
+       3. OPTIMIZED PRINT ENGINE (IN KHÔNG LỖI)
+       ========================================== */
     @media print {
-      .no-print { display: none !important; }
-      body { padding: 0; }
-      
-      .label-card {
-        border-color: #000 !important;
+      @page {
+        size: A4 landscape;
+        margin: 0;
       }
-      .label-header td, .label-body td {
-        border-color: #000 !important;
+
+      html, body {
+        background-color: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+
+      .viewer-toolbar {
+        display: none !important;
+      }
+
+      .document-container {
+        margin-top: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        display: block !important;
+      }
+
+      .page-canvas {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        width: 297mm !important;
+        height: 210mm !important;
+        max-height: 210mm !important;
+        padding: 6mm 8mm !important;
+        margin: 0 auto !important;
+        page-break-after: always;
+        break-after: page;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+
+      .label-card, .label-header td, .label-body td, .color-box {
+        border-color: #000000 !important;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Thanh công cụ -->
-  <div class="no-print">
-    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Nhãn (Ctrl + P)</button>
-    <span style="margin-left: 15px; color: #555;">(A4 Ngang: 2 Cột × 3 Hàng = 6 Nhãn to rõ, dễ cắt!)</span>
-  </div>
+  <!-- TOPBAR CANVAS TOOLBAR -->
+  <header class="viewer-toolbar">
+    <div class="toolbar-title">
+      📄 Document Viewer <span>A4 Landscape (6 Nhãn)</span>
+    </div>
 
-  <!-- LƯỚI 6 NHÃN KIỂM SOÁT KHỔ NGANG -->
-  <div class="labels-grid">
-    <!-- Code JavaScript sẽ tự động chèn 6 nhãn vào đây -->
-  </div>
+    <div class="toolbar-controls">
+      <button class="btn-print" onclick="triggerPrint()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        In Nhãn / Xuất PDF
+      </button>
+    </div>
+  </header>
 
-  <!-- SCRIPT XỬ LÝ DỮ LIỆU TỪ APPSHEET -->
+  <!-- CANVAS WORKSPACE -->
+  <main class="document-container">
+    <article class="page-canvas">
+      <!-- LƯỚI 6 NHÃN KIỂM SOÁT KHỔ NGANG -->
+      <div class="labels-grid">
+        <!-- Javascript sẽ tự động điền 6 nhãn vào đây -->
+      </div>
+    </article>
+  </main>
+
+  <!-- SCRIPT XỬ LÝ DỮ LIỆU -->
   <script>
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -185,7 +318,18 @@
       return '...';
     }
 
-   // Cấu trúc HTML của 1 chiếc nhãn đơn
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr === '...') return '...';
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        const month = parts[0].padStart(2, '0');
+        const day = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${day}/${month}/${year}`;
+      }
+      return dateStr;
+    }
+
     function createSingleLabel(data) {
       return `
         <div class="label-card">
@@ -235,26 +379,10 @@
             </tr>
           </table>
 
-          <!-- CHÈN THÊM Ô HÌNH VUÔNG 2x2cm VÀO ĐÂY -->
+          <!-- Ô HÌNH VUÔNG NẰM GÓC DƯỚI BÊN PHẢI -->
           <div class="color-box"></div>
-
         </div>
       `;
-    }
-
-    // Hàm hỗ trợ tự động đảo MM/DD/YYYY thành DD/MM/YYYY
-    function formatDate(dateStr) {
-      if (!dateStr || dateStr === '...') return '...';
-      
-      // Nếu chuỗi có dạng MM/DD/YYYY (VD: 07/13/2026)
-      const parts = dateStr.split('/');
-      if (parts.length === 3) {
-        const month = parts[0].padStart(2, '0');
-        const day = parts[1].padStart(2, '0');
-        const year = parts[2];
-        return `${day}/${month}/${year}`; // Đảo lại thành Ngày/Tháng/Năm (13/07/2026)
-      }
-      return dateStr;
     }
 
     function renderLabels() {
@@ -266,7 +394,7 @@
         kyHieu: getQueryParam('ky_hieu'),
         maSo: getQueryParam('ma_so'),
         nuocSx: getQueryParam('nuoc_sx'),
-        ngayKiem: formatDate(rawNgayKiem) // <--- ĐÃ ĐƯỢC CHUYỂN THÀNH DD/MM/YYYY
+        ngayKiem: formatDate(rawNgayKiem)
       };
 
       const gridContainer = document.querySelector('.labels-grid');
@@ -280,11 +408,7 @@
     }
 
     function triggerPrint() {
-      try {
-        window.print();
-      } catch (e) {
-        alert("Trình duyệt chặn cửa sổ in, bạn vui lòng bấm Ctrl + P để in nhé!");
-      }
+      window.print();
     }
 
     window.addEventListener('DOMContentLoaded', function() {
