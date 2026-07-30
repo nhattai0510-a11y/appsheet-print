@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document Viewer - Nhãn Tím (A5 Đứng)</title>
+  <title>Nhãn lấy mẫu SANOFI - Nhãn Tím (A5 Đứng)</title>
   <style>
     /* ==========================================
        1. CORE SYSTEM & CANVAS STYLES (UI/UX)
        ========================================== */
     :root {
-      --bg-canvas: #c0d4e3;
+      --bg-canvas: #f4f5f7;
       --bg-page: #ffffff;
       --primary-color: #2563eb;
       --primary-hover: #1d4ed8;
@@ -30,63 +30,150 @@
       color: var(--text-main);
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      transition: background-color 0.3s ease;
     }
 
-    /* Fixed Modern Toolbar */
-    .viewer-toolbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--toolbar-height);
-      background-color: #1e293b;
-      color: #f8fafc;
+    /* Chế độ xem Tối (Dark Mode) cho nền ứng dụng */
+    body.dark-mode {
+      background-color: #1e1e2d;
+      color: #e0e0e0;
+    }
+
+    /* ================= THANH CÔNG CỤ (TOOLBAR) ================= */
+    .no-print {
+      background: #ffffff;
+      padding: 10px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
+      position: sticky;
+      top: 0;
       z-index: 1000;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
-    .toolbar-title {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
+    body.dark-mode .no-print {
+      background: #2b2b40;
+      border-bottom-color: #3b3b54;
+    }
+
+    .toolbar-left {
       display: flex;
       align-items: center;
       gap: 10px;
-      color: #e2e8f0;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a202c;
     }
 
-    .toolbar-title span {
-      background: #334155;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      color: #94a3b8;
+    body.dark-mode .toolbar-left {
+      color: #f7fafc;
     }
 
-    .toolbar-controls {
+    .toolbar-left-icon {
+      font-size: 18px;
+    }
+
+    .toolbar-right {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
+    /* Cụm Zoom */
+    .zoom-control {
+      display: flex;
+      align-items: center;
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 2px 6px;
+    }
+
+    body.dark-mode .zoom-control {
+      background: #3a3a52;
+    }
+
+    .btn-zoom {
+      background: transparent;
+      border: none;
+      padding: 6px 10px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #475569;
+      border-radius: 4px;
+    }
+
+    body.dark-mode .btn-zoom {
+      color: #cbd5e1;
+    }
+
+    .btn-zoom:hover {
+      background: #e2e8f0;
+    }
+
+    body.dark-mode .btn-zoom:hover {
+      background: #4a4a68;
+    }
+
+    .zoom-value {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0 8px;
+      min-width: 50px;
+      text-align: center;
+      color: #334155;
+    }
+
+    body.dark-mode .zoom-value {
+      color: #f1f5f9;
+    }
+
+    /* Nút Chế độ sáng/tối */
+    .btn-theme {
+      background: #f1f5f9;
+      border: none;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    body.dark-mode .btn-theme {
+      background: #3a3a52;
+      color: #f1f5f9;
+    }
+
+    .btn-theme:hover {
+      background: #e2e8f0;
+    }
+
+    body.dark-mode .btn-theme:hover {
+      background: #4a4a68;
+    }
+
+    /* Nút In */
     .btn-print {
       background: var(--primary-color);
       color: #ffffff;
       border: none;
       padding: 8px 18px;
-      font-size: 13px;
-      font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: background 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      transition: background 0.2s;
     }
 
     .btn-print:hover {
@@ -95,13 +182,13 @@
 
     /* Document Canvas Container */
     .document-container {
-      margin-top: var(--toolbar-height);
       padding: 30px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 30px;
-      overflow-y: auto;
+      transform-origin: top center;
+      transition: transform 0.15s ease-out;
     }
 
     /* Canvas Page Frame (A5 Portrait Visual) */
@@ -109,7 +196,7 @@
       width: 148mm;
       height: 210mm;
       background-color: var(--bg-page);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
       border-radius: 2px;
       padding: 6mm 8mm;
       display: flex;
@@ -214,15 +301,15 @@
         width: 100% !important;
       }
 
-      .viewer-toolbar {
+      .no-print {
         display: none !important;
       }
 
       .document-container {
-        margin-top: 0 !important;
         padding: 0 !important;
         gap: 0 !important;
         display: block !important;
+        transform: none !important;
       }
 
       .page-canvas {
@@ -243,13 +330,21 @@
 </head>
 <body>
 
-  <!-- TOPBAR CANVAS TOOLBAR -->
-  <header class="viewer-toolbar">
-    <div class="toolbar-title">
-      📄 Document Viewer <span>Mẫu Kiểm Lô Bình Thường - Nhãn Tím (A5)</span>
+  <!-- TOPBAR TOOLBAR -->
+  <header class="no-print">
+    <div class="toolbar-left">
+      <span class="toolbar-left-icon">📄</span>
+      <span>Xem trước bản in (Nhãn Tím - A5)</span>
     </div>
-
-    <div class="toolbar-controls">
+    <div class="toolbar-right">
+      <div class="zoom-control">
+        <button class="btn-zoom" onclick="changeZoom(-10)">-</button>
+        <span class="zoom-value" id="zoom-text">100%</span>
+        <button class="btn-zoom" onclick="changeZoom(10)">+</button>
+      </div>
+      <button class="btn-theme" onclick="toggleTheme()">
+        🌙 / ☀️ Chế độ
+      </button>
       <button class="btn-print" onclick="triggerPrint()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
         In Nhãn / Xuất PDF
@@ -258,7 +353,7 @@
   </header>
 
   <!-- CANVAS WORKSPACE -->
-  <main class="document-container">
+  <main class="document-container" id="document-container">
     <article class="page-canvas">
       <div>
         <table class="main-table">
@@ -327,6 +422,22 @@
   </main>
 
   <script>
+    // Logic Thu / Phóng Zoom
+    let currentZoom = 100;
+    function changeZoom(delta) {
+      currentZoom += delta;
+      if (currentZoom < 50) currentZoom = 50;
+      if (currentZoom > 200) currentZoom = 200;
+      
+      document.getElementById('zoom-text').innerText = currentZoom + '%';
+      document.getElementById('document-container').style.transform = `scale(${currentZoom / 100})`;
+    }
+
+    // Logic Chuyển Chế độ Sáng / Tối
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+    }
+
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       for (let [key, value] of urlParams.entries()) {
