@@ -2,126 +2,367 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sổ Tay Kiểm Nghiệm Viên</title>
   <style>
-    @page { size: A4 portrait; margin: 10mm 15mm 6mm 15mm; }
-    * { box-sizing: border-box; }
-    body { font-family: "Times New Roman", Times, serif; font-size: 10pt; line-height: 1.3; margin: 0.5cm; padding: 0; color: #000; }
-    .page { display: flex; flex-direction: column; min-height: 135mm; box-sizing: border-box; }
+    /* ==========================================
+       1. THIẾT LẬP TRANG IN & BIẾN GIAO DIỆN
+       ========================================== */
+    @page { 
+      size: A4 portrait; 
+      margin: 5mm 10mm 5mm 10mm; 
+    }
+    * { 
+      box-sizing: border-box; 
+    }
     
-    .no-print { background: #f0f0f0; padding: 8px; margin-bottom: 10px; border-bottom: 0.5px solid #7c7a7a; text-align: center; }
-    .btn { padding: 6px 14px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    :root { 
+      --bg-viewer: #e2e8f0; 
+      --paper-bg: #ffffff; 
+      --text-color: #000000; 
+      --border-color: #7c7a7a; 
+    }
+    
+    body.dark-mode { 
+      --bg-viewer: #0f172a; 
+    }
 
-    /* Bảng Header */
-    .header-table { width: 100%; border-collapse: collapse; border: 0.5px solid #7c7a7a; margin-bottom: 8px; }
-    .header-table td { border: 0.5px solid #7c7a7a; padding: 6px; vertical-align: middle; }
+    body { 
+      font-family: "Times New Roman", Times, serif; 
+      font-size: 10pt; 
+      line-height: 1.25; 
+      margin: 0; 
+      padding: 0; 
+      color: var(--text-color); 
+      background-color: var(--bg-viewer);
+      transition: background-color 0.3s ease;
+    }
+
+    /* ==========================================
+       2. MODERN UI/UX TOOLBAR
+       ========================================== */
+    .app-toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 55px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body.dark-mode .app-toolbar {
+      background: rgba(30, 41, 59, 0.9);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .toolbar-title {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-ui {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+    body.dark-mode .btn-secondary {
+      background: #334155;
+      color: #f8fafc;
+    }
+    body.dark-mode .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      padding: 2px;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+    body.dark-mode .zoom-controls {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .btn-zoom {
+      background: transparent;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+      color: inherit;
+    }
+    .btn-zoom:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    body.dark-mode .btn-zoom:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================
+       3. PAPER CANVAS VIEWER
+       ========================================== */
+    .viewer-container {
+      padding-top: 75px;
+      padding-bottom: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+
+    .page { 
+      background: var(--paper-bg);
+      width: 210mm;
+      min-height: 135mm; 
+      padding: 8mm 12mm 6mm 12mm;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      border-radius: 2px;
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between;
+      box-sizing: border-box; 
+      transform-origin: top center;
+      transition: transform 0.2s ease;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* ==========================================
+       4. BỐ TRÍ VĂN BẢN
+       ========================================== */
+    .header-table { width: 100%; border-collapse: collapse; border: 0.5px solid var(--border-color); margin-bottom: 6px; }
+    .header-table td { border: 0.5px solid var(--border-color); padding: 4px; vertical-align: middle; }
     .header-logo { width: 25%; text-align: center; }
-    .header-logo img { max-height: 50px; width: auto; display: block; margin: 0 auto; }
-    .header-title { width: 75%; font-size: 13pt; font-weight: bold; text-align: center; text-transform: uppercase; }
+    .header-logo img { max-height: 45px; width: auto; display: block; margin: 0 auto; }
+    .header-title { width: 75%; font-size: 12pt; font-weight: bold; text-align: center; text-transform: uppercase; }
 
-    /* Bảng Thông tin */
-    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
-    .info-table td { border: none; padding: 3px 0; vertical-align: middle; }
+    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
+    .info-table td { border: none; padding: 2px 0; vertical-align: middle; }
     .col-label { white-space: nowrap; padding-right: 5px; }
 
-    /* Nội dung kiểm tra */
-    .test-content { margin-top: 4px; line-height: 1.4; }
-    .test-content div { margin-bottom: 3px; }
+    .test-content { margin-top: 2px; line-height: 1.3; }
+    .test-content div { margin-bottom: 2px; }
 
-    /* Footer Chữ ký & Mã biểu mẫu */
     .footer-table { margin-top: auto; border: none; width: 100%; }
-    .footer-table td { border: none; text-align: center; vertical-align: top; padding-top: 10px; }
+    .footer-table td { border: none; text-align: center; vertical-align: top; padding-top: 6px; }
     
-    .doc-info { width: 100%; margin-top: 8px; font-size: 8.5pt; border-top: 0.5px solid #7c7a7a; padding-top: 1px; }
+    .doc-info { width: 100%; margin-top: 6px; font-size: 8.5pt; border-top: 0.5px solid var(--border-color); padding-top: 2px; }
     .doc-info td { border: none !important; padding: 0; }
 
+    /* ==========================================
+       5. CSS CHỈ DÀNH CHO BẢN IN (ĐÃ SỬA LỖI MẤT FOOTER)
+       ========================================== */
     @media print {
-      .no-print { display: none !important; }
-      body { padding: 0; margin: 0; }
-      .page { height: 138mm; }
+      html, body { 
+        width: 210mm; 
+        background: #ffffff !important; 
+        margin: 0 !important; 
+        padding: 0 !important; 
+      }
+      .no-print, .app-toolbar { 
+        display: none !important; 
+      }
+      .viewer-container { 
+        padding: 0 !important; 
+        margin: 0 !important; 
+        display: block !important; 
+        min-height: auto !important; 
+      }
+      .page { 
+        width: 100% !important;
+        min-height: 130mm !important;
+        max-height: 140mm !important;
+        height: auto !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 6mm 10mm 4mm 10mm !important;
+        transform: none !important;
+        overflow: visible !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+      }
+      .header-table, .header-table td, .doc-info { 
+        border-color: #000000 !important; 
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="no-print">
-    <button class="btn" type="button" onclick="triggerPrint()">🖨️ In Ngay (Ctrl + P)</button>
+  <!-- FIXED TOOLBAR MODERN UI/UX -->
+  <div class="app-toolbar no-print">
+    <div class="toolbar-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      <span>Xem Trước Bản In (Sổ Tay Kiểm Nghiệm Viên)</span>
+    </div>
+    
+    <div class="toolbar-actions">
+      <!-- Bộ điều chỉnh Zoom -->
+      <div class="zoom-controls">
+        <button class="btn-zoom" onclick="zoomOut()" title="Thu nhỏ">-</button>
+        <span id="zoom-value" style="padding: 0 6px;">100%</span>
+        <button class="btn-zoom" onclick="zoomIn()" title="Phóng to">+</button>
+      </div>
+
+      <!-- Đổi Chế Độ Dark Mode -->
+      <button class="btn-ui btn-secondary" onclick="toggleDarkMode()">
+        <span>🌙 / ☀️ Chế độ</span>
+      </button>
+
+      <!-- Nút In / Xuất PDF -->
+      <button class="btn-ui btn-primary" onclick="triggerPrint()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        <span>In Văn Bản / Xuất PDF</span>
+      </button>
+    </div>
   </div>
 
-  <div class="page">
-    <!-- HEADER TABLE -->
-    <table class="header-table">
-      <tr>
-        <td class="header-logo">
-          <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/100x40?text=LOGO'">
-        </td>
-        <td class="header-title">SỔ TAY KIỂM NGHIỆM VIÊN</td>
-      </tr>
-    </table>
+  <!-- CANVAS XEM TRƯỚC VĂN BẢN -->
+  <div class="viewer-container">
+    <div class="page" id="paper-page">
+      <div>
+        <!-- HEADER TABLE -->
+        <table class="header-table">
+          <tr>
+            <td class="header-logo">
+              <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/100x40?text=LOGO'">
+            </td>
+            <td class="header-title">SỔ TAY KIỂM NGHIỆM VIÊN</td>
+          </tr>
+        </table>
 
-    <!-- THÔNG TIN BAN ĐẦU -->
-    <table class="info-table">
-      <tr>
-        <td colspan="4">Ngày …… tháng …… năm <span id="val-year">...</span></td>
-      </tr>
-      <tr>
-        <td class="col-label" style="width: 110px;">Tên mẫu:</td>
-        <td><b><span id="val-ten-sp">...</span></b></td>
-      </tr>
-      <tr>
-        <td class="col-label">Khách hàng:</td>
-        <td colspan="3"><b><span id="val-ten-kh">...</span></b></td>
-      </tr>
-      <tr>
-        <td class="col-label">Số lô sản xuất:</td>
-        <td style="width: 200px;"><b><span id="val-so-lo">...</span></b></td>
-        <td class="col-label" style="width: 80px;">Số hồ sơ:</td>
-        <td><b><span id="val-so-hsl">...</span></b></td>
-      </tr>
-      <tr>
-        <td class="col-label">Hạn dùng:</td>
-        <td colspan="3"><b><span id="val-han-dung">...</span></b></td>
-      </tr>
-      <tr>
-        <td class="col-label">Máy sản xuất:</td>
-        <td><span id="val-may-sx">...</span></td>
-        <td colspan="2">Nhiệt độ: ………….. °C</td>
-      </tr>
-    </table>
+        <!-- THÔNG TIN BAN ĐẦU -->
+        <table class="info-table">
+          <tr>
+            <td colspan="4">Ngày …… tháng …… năm <span id="val-year">...</span></td>
+          </tr>
+          <tr>
+            <td class="col-label" style="width: 110px;">Tên mẫu:</td>
+            <td><b><span id="val-ten-sp">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Khách hàng:</td>
+            <td colspan="3"><b><span id="val-ten-kh">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Số lô sản xuất:</td>
+            <td style="width: 200px;"><b><span id="val-so-lo">...</span></b></td>
+            <td class="col-label" style="width: 80px;">Số hồ sơ:</td>
+            <td><b><span id="val-so-hsl">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Hạn dùng:</td>
+            <td colspan="3"><b><span id="val-han-dung">...</span></b></td>
+          </tr>
+          <tr>
+            <td class="col-label">Máy sản xuất:</td>
+            <td><span id="val-may-sx">...</span></td>
+            <td colspan="2">Nhiệt độ: ………….. °C</td>
+          </tr>
+        </table>
 
-    <!-- PHƯƠNG PHÁP & KẾT QUẢ -->
-    <div class="test-content">
-      <div>- Phương pháp thử: theo QA-SOP 20 (mục 4.3)</div>
-      <div>- Đóng nước cất đến vai ống (đ/v chai đóng 90% thể tích tràn đầy)</div>
-      <div>- Định lượng với dung dịch HCl 0,01M</div>
-      <div style="margin-top: 6px;"><b>Kết quả:</b></div>
-      <div>- Kết quả trên 50ml dung dịch mẫu: B1 = .................... ml; B2 = .................... ml</div>
-      <div>- Kết quả trên 100ml dung dịch mẫu: M = .................... ml &lt; .................... ml</div>
-      <div style="margin-top: 6px;"><b>KẾT LUẬN: &nbsp;&nbsp; Độ trung tính:</b> &nbsp;&nbsp; Đạt ☐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Không đạt: ☐</div>
+        <!-- PHƯƠNG PHÁP & KẾT QUẢ -->
+        <div class="test-content">
+          <div>- Phương pháp thử: theo QA-SOP 20 (mục 4.3)</div>
+          <div>- Đóng nước cất đến vai ống (đ/v chai đóng 90% thể tích tràn đầy)</div>
+          <div>- Định lượng với dung dịch HCl 0,01M</div>
+          <div style="margin-top: 4px;"><b>Kết quả:</b></div>
+          <div>- Kết quả trên 50ml dung dịch mẫu: B1 = .................... ml; B2 = .................... ml</div>
+          <div>- Kết quả trên 100ml dung dịch mẫu: M = .................... ml &lt; .................... ml</div>
+          <div style="margin-top: 4px;"><b>KẾT LUẬN: &nbsp;&nbsp; Độ trung tính:</b> &nbsp;&nbsp; Đạt ☐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Không đạt: ☐</div>
+        </div>
+      </div>
+
+      <!-- BOTTOM SECTION (SẼ TỰ ĐỘNG DÍNH DƯỚI ĐÁY TRANG IN) -->
+      <div>
+        <!-- FOOTER CHỮ KÝ -->
+        <table class="footer-table">
+          <tr>
+            <td style="width: 50%;">
+              <b>KIỂM NGHIỆM VIÊN</b><br><br><br><br>
+              <span id="val-ten-knv">……………………………….</span>
+            </td>
+            <td style="width: 50%;">
+              <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
+              ……………………………….
+            </td>
+          </tr>
+        </table>
+
+        <!-- MÃ BẢNG BIỂU -->
+        <table class="doc-info">
+          <tr>
+            <td style="width: 33%; text-align: left;">M04/QA-SOP 22</td>
+            <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
+            <td style="width: 33%; text-align: right;">Trang 1/1</td>
+          </tr>
+        </table>
+      </div>
+
     </div>
-
-    <!-- FOOTER CHỮ KÝ -->
-    <table class="footer-table">
-      <tr>
-        <td style="width: 50%;">
-          <b>KIỂM NGHIỆM VIÊN</b><br><br><br><br>
-          <span id="val-ten-knv">……………………………….</span>
-        </td>
-        <td style="width: 50%;">
-          <b>TP. ĐẢM BẢO CHẤT LƯỢNG</b><br><br><br><br>
-          ……………………………….
-        </td>
-      </tr>
-    </table>
-
-    <!-- MÃ BẢNG BIỂU -->
-    <table class="doc-info">
-      <tr>
-        <td style="width: 33%; text-align: left;">M04/QA-SOP 22</td>
-        <td style="width: 34%; text-align: center;">Lần sửa đổi: 00</td>
-        <td style="width: 33%; text-align: right;">Trang 1/1</td>
-      </tr>
-    </table>
   </div>
 
   <script>
@@ -134,17 +375,14 @@
       }
       return '...';
     }
-    // Hàm chuyển đổi chuẩn xác các định dạng về DD/MM/YYYY
+
     function formatDate(dateStr) {
       if (!dateStr || dateStr === '...') return '...';
-      
       const cleanStr = dateStr.trim().split('T')[0].split(' ')[0];
-
       if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}$/.test(cleanStr)) {
         const parts = cleanStr.split(/[-/]/);
         return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
       }
-
       const d = new Date(cleanStr);
       if (!isNaN(d.getTime())) {
         const day = String(d.getDate()).padStart(2, '0');
@@ -152,7 +390,6 @@
         const year = d.getFullYear();
         return `${day}/${month}/${year}`;
       }
-
       return dateStr;
     }
 
@@ -162,7 +399,7 @@
       const tenKh = getQueryParam('ten_kh');
       const soLo = getQueryParam('so_lo');
       const soHsl = getQueryParam('so_hsl');
-      const hanDung = getQueryParam('han_dung');
+      const hanDung = formatDate(getQueryParam('han_dung'));
       const maySx = getQueryParam('may_sx');
       const tenKnv = getQueryParam('ten_knv');
 
@@ -176,7 +413,41 @@
       if (document.getElementById('val-ten-knv') && tenKnv !== '...') document.getElementById('val-ten-knv').innerText = tenKnv;
     }
 
-    function triggerPrint() { try { window.print(); } catch (e) { alert("Bấm Ctrl + P để in!"); } }
+    function triggerPrint() { 
+      try { 
+        window.print(); 
+      } catch (e) { 
+        alert("Bấm Ctrl + P để in!"); 
+      } 
+    }
+
+    // Tính năng Thu Phóng (Zoom)
+    let currentZoom = 100;
+    function updateZoom() {
+      const paper = document.getElementById('paper-page');
+      paper.style.transform = `scale(${currentZoom / 100})`;
+      document.getElementById('zoom-value').innerText = `${currentZoom}%`;
+    }
+
+    function zoomIn() {
+      if (currentZoom < 180) {
+        currentZoom += 10;
+        updateZoom();
+      }
+    }
+
+    function zoomOut() {
+      if (currentZoom > 60) {
+        currentZoom -= 10;
+        updateZoom();
+      }
+    }
+
+    // Chế độ Tối (Dark Mode)
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
     window.addEventListener('DOMContentLoaded', fillData);
   </script>
 </body>
