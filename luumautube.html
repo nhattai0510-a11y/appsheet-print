@@ -326,7 +326,7 @@
           <!-- Dòng 2: Số STT -->
           <tr>
             <td colspan="2" style="font-size: 10pt;">
-              Số: <b><span id="val-stt">...</span></b> - <span id="val-year">...</span>/ CL
+              Số: <b><span id="val-stt">...</span></b> - <b><span id="val-year">...</span></b>/ CL
             </td>
           </tr>
           <!-- Dòng 3: Tên mẫu -->
@@ -442,7 +442,10 @@
       if(document.getElementById('val-so-lo')) document.getElementById('val-so-lo').innerText = soLo;
       if(document.getElementById('val-sl-luu')) document.getElementById('val-sl-luu').innerText = slLuu;
       
-      if(document.getElementById('val-han-dung')) document.getElementById('val-han-dung').innerText = formatDate(hanDung);
+      // Giữ nguyên chuỗi văn bản gốc cho Hạn dùng
+      if(document.getElementById('val-han-dung')) document.getElementById('val-han-dung').innerText = hanDung;
+      
+      // Định dạng ngày/tháng/năm cho Ngày lưu mẫu
       if(document.getElementById('val-ngay-luu')) document.getElementById('val-ngay-luu').innerText = formatDate(ngayLuu);
       
       if(document.getElementById('val-tg-luu')) document.getElementById('val-tg-luu').innerText = tgLuu;
