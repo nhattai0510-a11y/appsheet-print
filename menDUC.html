@@ -3,131 +3,211 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document Viewer - Phiếu Kiểm Tra Men In / Dung Môi</title>
+  <title>Phiếu Kiểm Tra Men In / Dung Môi</title>
   <style>
     /* ==========================================
-       1. CORE SYSTEM & CANVAS STYLES (UI/UX)
-       ========================================== */
-    :root {
-      --bg-canvas: #c0d4e3;
-      --bg-page: #ffffff;
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --border-color: #000000;
-      --text-main: #1f2937;
-      --toolbar-height: 56px;
-    }
+   1. CORE SYSTEM & TOOLBAR STYLES
+   ========================================== */
+:root {
+  --bg-canvas: #dae5ee;
+  --bg-page: #ffffff;
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --border-color: #000000;
+  --text-main: #1f2937;
+  --toolbar-height: 56px;
+}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+/* Chế độ nền tối / sáng cho canvas */
+body.dark-mode {
+  --bg-canvas: #0f172a;
+}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-canvas);
-      color: var(--text-main);
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    /* Fixed Modern Toolbar */
-    .viewer-toolbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--toolbar-height);
-      background-color: #1e293b;
-      color: #f8fafc;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      z-index: 1000;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--text-main);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease;
+}
 
-    .toolbar-title {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #e2e8f0;
-    }
+/* Fixed Modern Toolbar */
+.viewer-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--toolbar-height);
+  background-color: #1e293b;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  user-select: none;
+}
 
-    .toolbar-title span {
-      background: #334155;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      color: #94a3b8;
-    }
+/* Bên trái: Tiêu đề */
+.toolbar-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f1f5f9;
+}
 
-    .toolbar-controls {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+.toolbar-title span {
+  background: #334155;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
 
-    .print-mode-group {
-      display: flex;
-      background: #334155;
-      padding: 3px;
-      border-radius: 6px;
-      gap: 2px;
-    }
+/* Bên phải: Cụm điều khiển */
+.toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-    .btn-mode {
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      padding: 6px 12px;
-      font-size: 13px;
-      font-weight: 500;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+/* Cụm thu phóng Zoom */
+.zoom-group {
+  display: flex;
+  align-items: center;
+  background: #334155;
+  border-radius: 6px;
+  padding: 2px;
+}
 
-    .btn-mode.active, .btn-mode:hover {
-      background: var(--primary-color);
-      color: #ffffff;
-    }
+.btn-zoom {
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
 
-    .btn-print {
-      background: var(--primary-color);
-      color: #ffffff;
-      border: none;
-      padding: 8px 18px;
-      font-size: 13px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: background 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+.btn-zoom:hover {
+  background: #475569;
+  color: #ffffff;
+}
 
-    .btn-print:hover {
-      background: var(--primary-hover);
-    }
+.zoom-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f8fafc;
+  padding: 0 8px;
+  min-width: 45px;
+  text-align: center;
+  cursor: pointer;
+}
 
-    /* Document Canvas Container */
-    .document-container {
-      margin-top: var(--toolbar-height);
-      padding: 30px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
-      overflow-y: auto;
-    }
+/* Group chọn trang in */
+.print-mode-group {
+  display: flex;
+  background: #334155;
+  padding: 3px;
+  border-radius: 6px;
+  gap: 2px;
+}
+
+.btn-mode {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-mode.active, .btn-mode:hover {
+  background: #475569;
+  color: #ffffff;
+}
+
+.btn-mode.active {
+  background: var(--primary-color);
+}
+
+/* Nút Chế độ Nền */
+.btn-theme-toggle {
+  background: #334155;
+  border: none;
+  color: #f8fafc;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-theme-toggle:hover {
+  background: #475569;
+}
+
+/* Nút In Nổi Bật */
+.btn-print {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border: 1px solid #3b82f6;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+}
+
+.btn-print:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Container Document Canvas Hỗ trợ Zoom */
+.document-container {
+  margin-top: var(--toolbar-height);
+  padding: 30px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  overflow-y: auto;
+  transform-origin: top center;
+  transition: transform 0.15s ease-out;
+}
 
     /* Canvas Page Frame (A4 Standard Visual) */
     .page-canvas {
@@ -308,24 +388,40 @@
 <body>
 
   <!-- TOPBAR CANVAS TOOLBAR -->
-  <header class="viewer-toolbar">
-    <div class="toolbar-title">
-      📄 Document Viewer <span>A4 Canvas</span>
+<header class="viewer-toolbar">
+  <!-- Bên trái: Tiêu đề -->
+  <div class="toolbar-title">
+    📄 Xem trước bản in <span>(PKT Men Đức_A4)</span>
+  </div>
+
+  <!-- Bên phải: Các cụm điều khiển -->
+  <div class="toolbar-controls">
+    
+    <!-- Cụm Thu phóng Zoom -->
+    <div class="zoom-group">
+      <button class="btn-zoom" onclick="zoomOut()" title="Thu nhỏ">-</button>
+      <span class="zoom-value" id="zoom-text" onclick="resetZoom()" title="Reset về 100%">100%</span>
+      <button class="btn-zoom" onclick="zoomIn()" title="Phóng to">+</button>
     </div>
 
-    <div class="toolbar-controls">
-      <div class="print-mode-group">
-        <button class="btn-mode active" id="btn-both" onclick="changePrintMode('both')">In cả 2 Trang</button>
-        <button class="btn-mode" id="btn-phieu" onclick="changePrintMode('phieu')">Chỉ Trang 1</button>
-        <button class="btn-mode" id="btn-sotay" onclick="changePrintMode('sotay')">Chỉ Trang 2</button>
-      </div>
-
-      <button class="btn-print" onclick="triggerPrint()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-        In / Xuất PDF
-      </button>
+    <!-- Cụm chọn trang in -->
+    <div class="print-mode-group">
+      <button class="btn-mode active" id="btn-both" onclick="changePrintMode('both')">In cả 2 Trang</button>
+      <button class="btn-mode" id="btn-phieu" onclick="changePrintMode('phieu')">Chỉ Trang 1</button>
+      <button class="btn-mode" id="btn-sotay" onclick="changePrintMode('sotay')">Chỉ Trang 2</button>
     </div>
-  </header>
+
+    <!-- Chuyển chế độ Nền tối/Sáng -->
+    <button class="btn-theme-toggle" id="btn-theme" onclick="toggleTheme()">
+      <span id="theme-icon">🌙</span> <span id="theme-text">Nền tối</span>
+    </button>
+
+    <!-- Nút in nổi bật -->
+    <button class="btn-print" onclick="triggerPrint()">
+      🖨️ In phiếu / Xuất PDF
+    </button>
+  </div>
+</header>
 
   <!-- CANVAS WORKSPACE -->
   <main class="document-container">
@@ -697,6 +793,55 @@
       fillData();
       changePrintMode('both');
     });
+    // ==========================================
+// TOOLBAR CONTROLS (ZOOM & THEME TOGGLE)
+// ==========================================
+let currentZoom = 1;
+
+function updateZoom() {
+  const container = document.querySelector('.document-container');
+  if (container) {
+    container.style.transform = `scale(${currentZoom})`;
+  }
+  const zoomText = document.getElementById('zoom-text');
+  if (zoomText) {
+    zoomText.innerText = `${Math.round(currentZoom * 100)}%`;
+  }
+}
+
+function zoomIn() {
+  if (currentZoom < 1.8) {
+    currentZoom += 0.1;
+    updateZoom();
+  }
+}
+
+function zoomOut() {
+  if (currentZoom > 0.5) {
+    currentZoom -= 0.1;
+    updateZoom();
+  }
+}
+
+function resetZoom() {
+  currentZoom = 1;
+  updateZoom();
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  const themeIcon = document.getElementById('theme-icon');
+  const themeText = document.getElementById('theme-text');
+
+  if (isDark) {
+    themeIcon.innerText = '☀️';
+    themeText.innerText = 'Nền sáng';
+  } else {
+    themeIcon.innerText = '🌙';
+    themeText.innerText = 'Nền tối';
+  }
+}
   </script>
 </body>
 </html>
