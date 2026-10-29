@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phiếu Xuất & Giao NVL (Có dòng trống dự phòng)</title>
+  <title>Phiếu Xuất & Giao NVL (Chuẩn Mẫu Mới)</title>
   <style>
     /* ==========================================
        1. THIẾT LẬP TRANG IN & GIAO DIỆN
@@ -29,8 +29,8 @@
 
     body { 
       font-family: "Times New Roman", Times, serif; 
-      font-size: 8pt; /* Cỡ chữ tối ưu để chứa thêm các dòng trống vừa vặn 1 trang A4 */
-      line-height: 1.15; 
+      font-size: 8pt; 
+      line-height: 1.2; 
       margin: 0; 
       padding: 0; 
       color: var(--text-color); 
@@ -135,7 +135,7 @@
       background: var(--paper-bg);
       width: 210mm;
       height: 297mm;
-      padding: 5mm 10mm;
+      padding: 3mm 10mm;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
       border-radius: 2px;
       display: flex; 
@@ -148,12 +148,12 @@
     }
 
     .sub-ticket {
-      height: 48.8%;
+      height: 49%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       border-bottom: 1.5px dashed #475569;
-      padding-bottom: 2mm;
+      padding-bottom: 1.5mm;
     }
     .sub-ticket:last-child {
       border-bottom: none;
@@ -164,26 +164,26 @@
     /* ==========================================
        4. BỐ TRÍ BẢNG VÀ NỘI DUNG
        ========================================== */
-    .header-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border-color); margin-bottom: 2px; }
-    .header-table td { border: 1px solid var(--border-color); padding: 2px 4px; vertical-align: middle; }
+    .header-table { width: 100%; border-collapse: collapse; border: 0.5px solid var(--border-color); margin-bottom: 2px; }
+    .header-table td { border: 0.5px solid var(--border-color); padding: 5px 7px; vertical-align: middle; }
     .header-logo { width: 18%; text-align: center; }
-    .header-logo img { max-height: 28px; width: auto; display: block; margin: 0 auto; }
-    .header-title { width: 82%; font-size: 10pt; font-weight: bold; text-align: center; text-transform: uppercase; }
+    .header-logo img { max-height: 52px; width: auto; display: block; margin: 0 auto; }
+    .header-title { width: 82%; font-size: 12pt; font-weight: bold; text-align: center; text-transform: uppercase; }
 
     .info-line {
       font-size: 8pt;
-      margin-bottom: 2px;
+      margin-bottom: 6px;
       text-align: center;
     }
 
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
     .data-table th, .data-table td {
       border: 0.5px solid var(--border-color);
-      padding: 1.5px 3px;
+      padding: 8px 6px; /* Tăng khoảng đệm để mở rộng chiều cao dòng */
       vertical-align: middle;
       font-size: 7.5pt;
     }
@@ -193,6 +193,12 @@
       font-weight: bold;
     }
     .text-center { text-align: center; }
+
+    .note-footer {
+      font-size: 7pt;
+      font-style: italic;
+      margin-top: 1px;
+    }
 
     .footer-info { 
       width: 100%; 
@@ -229,7 +235,7 @@
         height: 297mm !important;
         box-shadow: none !important;
         border-radius: 0 !important;
-        padding: 4mm 10mm !important;
+        padding: 3mm 10mm !important;
         transform: none !important;
         page-break-after: avoid !important;
         page-break-inside: avoid !important;
@@ -250,7 +256,7 @@
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
         <polyline points="14 2 14 8 20 8"></polyline>
       </svg>
-      <span>Xem Trước Bản In (Phiếu Xuất & Giao NVL - Có dòng trống)</span>
+      <span>Xem Trước Bản In (Phiếu Xuất & Giao NVL)</span>
     </div>
     
     <div class="toolbar-actions">
@@ -283,98 +289,113 @@
           <table class="header-table">
             <tr>
               <td class="header-logo">
-                <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/60x30?text=LOGO'">
+                <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/70x35?text=LOGO'">
               </td>
               <td class="header-title">PHIẾU XUẤT NGUYÊN VẬT LIỆU</td>
             </tr>
           </table>
-          <div class="info-line">
-            Ngày <span id="xuat-ngay">……</span> tháng <span id="xuat-thang">……</span> năm <span id="xuat-nam">……</span>[cite: 21]
+          <div class="info-line"><br>
+            Ngày <span id="xuat-ngay">……………</span> tháng <span id="xuat-thang">……………</span> năm <span id="xuat-nam">……………</span>
           </div>
 
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width: 6%;">STT[cite: 21]</th>
-                <th style="width: 32%;">Nguyên vật liệu[cite: 21]</th>
-                <th style="width: 17%;">Mã số[cite: 21]</th>
-                <th style="width: 13%;">Đơn vị tính[cite: 21]</th>
-                <th style="width: 12%;">Số lượng[cite: 21]</th>
-                <th style="width: 10%;">Người xuất[cite: 21]</th>
-                <th style="width: 10%;">Người nhận[cite: 21]</th>
+                <th style="width: 27%;" colspan="2">HSL: <span id="xuat-hsl">...</span></th>
+                <th style="width: 43%;" colspan="3">Số lượng: <span id="xuat-sl-denhang">...</span></th>
+                <th style="width: 30%;" colspan="3">Số thùng/vỉ: <span id="xuat-thung-vi">...</span></th>
+              </tr>
+              <tr>
+                <th style="width: 5%;">STT</th>
+                <th style="width: 22%;">Nguyên vật liệu</th>
+                <th style="width: 15%;">Định mức quy định</th>
+                <th style="width: 15%;">Mã số</th>
+                <th style="width: 10%;">Đơn vị tính</th>
+                <th style="width: 13%;">Số lượng</th>
+                <th style="width: 10%;">Người xuất</th>
+                <th style="width: 10%;">Người nhận</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td class="text-center">1</td>
-                <td>Tube[cite: 21]</td>
+                <td>Tube</td>
+                <td class="text-center"><span id="xuat-dinhmuc-tube">...</span></td>
                 <td class="text-center"><span id="xuat-ms-tube">...</span></td>
-                <td class="text-center">Kg[cite: 21]</td>
+                <td class="text-center">Kg</td>
                 <td class="text-center"><b><span id="xuat-tube-kg">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
-                <td class="text-center"></td>
-                <td>Tube (Dòng trống dự phòng)[cite: 21]</td>
-                <td class="text-center"></td>
-                <td class="text-center">Kg[cite: 21]</td>
-                <td></td><td></td><td></td>
-              </tr>
-              <tr>
                 <td class="text-center">2</td>
-                <td>Thùng[cite: 21]</td>
+                <td>Thùng</td>
                 <td class="text-center"></td>
-                <td class="text-center">Cái[cite: 21]</td>
+                <td class="text-center"></td>
+                <td class="text-center">Cái</td>
                 <td class="text-center"><b><span id="xuat-thung-cai">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
                 <td class="text-center">3</td>
-                <td>Màng PE/ Nylon[cite: 21]</td>
+                <td>Màng PE/ Nylon</td>
                 <td class="text-center"></td>
-                <td class="text-center">Tờ[cite: 21]</td>
+                <td class="text-center"></td>
+                <td class="text-center">Tờ</td>
                 <td class="text-center"><b><span id="xuat-nylon-to">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
                 <td class="text-center">4</td>
-                <td>Hộp/ Khay[cite: 21]</td>
+                <td>Hộp/ Khay</td>
                 <td class="text-center"></td>
-                <td class="text-center">Cái[cite: 21]</td>
+                <td class="text-center"></td>
+                <td class="text-center">Cái</td>
                 <td class="text-center"><b><span id="xuat-hop-cai">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
                 <td class="text-center">5</td>
-                <td>Men in[cite: 21]</td>
+                <td>Men in</td>
+                <td class="text-center"><span id="xuat-dinhmuc-men">...</span></td>
                 <td class="text-center"><span id="xuat-ms-men">...</span></td>
-                <td class="text-center">Kg[cite: 21]</td>
+                <td class="text-center">Kg</td>
                 <td class="text-center"><b><span id="xuat-men-kg">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
                 <td class="text-center"></td>
-                <td>Men se vòng-Chấm[cite: 21]</td>
+                <td>Men Chấm</td>
+                <td class="text-center"></td>
                 <td class="text-center"><span id="xuat-ms-men-sc">...</span></td>
-                <td class="text-center">Kg[cite: 21]</td>
+                <td class="text-center">Kg</td>
                 <td class="text-center"><b><span id="xuat-sum-men">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
+                <td class="text-center"></td>
+                <td>Men se vòng</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center">Kg</td>
+                <td></td><td></td><td></td>
+              </tr>
+              <tr>
                 <td class="text-center">6</td>
-                <td>Dung môi[cite: 21]</td>
+                <td>Dung môi</td>
+                <td class="text-center"><span id="xuat-dinhmuc-dm">...</span></td>
                 <td class="text-center"><span id="xuat-ms-dm">...</span></td>
-                <td class="text-center">Kg[cite: 21]</td>
+                <td class="text-center">Kg</td>
                 <td class="text-center"><b><span id="xuat-dungmoi-kg">...</span></b></td>
                 <td></td><td></td>
               </tr>
             </tbody>
           </table>
+          <div class="note-footer">Định mức tube, men, dung môi/100.000sp</div>
         </div>
         <div class="footer-info">
-          <div>M04/KD-SOP 06[cite: 21]</div>
-          <div>Lần sửa đổi: 00[cite: 21]</div>
-          <div>Trang 1/1[cite: 21]</div>
+          <div>M04/KD-SOP 06</div>
+          <div>Lần sửa đổi: 01</div>
+          <div>Trang 1/1</div>
         </div>
       </div>
 
@@ -385,96 +406,131 @@
           <table class="header-table">
             <tr>
               <td class="header-logo">
-                <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/60x30?text=LOGO'">
+                <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/70x35?text=LOGO'">
               </td>
-              <td class="header-title">PHIẾU GIAO NGUYÊN VẬT LIỆU CHO MÁY[cite: 21]</td>
+              <td class="header-title">PHIẾU GIAO NGUYÊN VẬT LIỆU CHO MÁY</td>
             </tr>
           </table>
-          <div class="info-line">
-            Ngày <span id="giao-ngay">……</span> tháng <span id="giao-thang">……</span> năm <span id="giao-nam">……</span> | Máy: <b><span id="giao-may">……</span></b>[cite: 21]
+          <div class="info-line"><br>
+            Ngày <span id="giao-ngay">……………</span> tháng <span id="giao-thang">……………</span> năm <span id="giao-nam">……………</span><br><br> Máy: <b><span id="giao-may">……</span></b>
           </div>
 
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width: 6%;">STT[cite: 21]</th>
-                <th style="width: 32%;">Nguyên vật liệu[cite: 21]</th>
-                <th style="width: 17%;">Mã số[cite: 21]</th>
-                <th style="width: 13%;">Đơn vị tính[cite: 21]</th>
-                <th style="width: 12%;">Số lượng[cite: 21]</th>
-                <th style="width: 10%;">Người giao[cite: 21]</th>
-                <th style="width: 10%;">Người nhận[cite: 21]</th>
+                <th style="width: 27%;" colspan="2">HSL: <span id="giao-hsl">...</span></th>
+                <th style="width: 43%;" colspan="3">Số lượng: <span id="giao-sl-denhang">...</span></th>
+                <th style="width: 30%;" colspan="3">Số thùng/vỉ: <span id="giao-thung-vi">...</span></th>
+              </tr>
+              <tr>
+                <th style="width: 5%;">STT</th>
+                <th style="width: 22%;">Nguyên vật liệu</th>
+                <th style="width: 15%;">Định mức quy định</th>
+                <th style="width: 15%;">Mã số</th>
+                <th style="width: 10%;">Đơn vị tính</th>
+                <th style="width: 13%;">Số lượng</th>
+                <th style="width: 10%;">Người giao</th>
+                <th style="width: 10%;">Người nhận</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td class="text-center">1</td>
-                <td>Tube giao[cite: 21]</td>
+                <td>Tube</td>
+                <td class="text-center"><span id="giao-dinhmuc-tube">...</span></td>
                 <td class="text-center"><span id="giao-ms-tube">...</span></td>
-                <td class="text-center">Kg[cite: 21]</td>
+                <td class="text-center">Kg</td>
                 <td class="text-center"><b><span id="giao-tube-kg">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
+                <td class="text-center">2</td>
+                <td>Thùng</td>
                 <td class="text-center"></td>
-                <td>Tube giao (Dòng trống)[cite: 21]</td>
                 <td class="text-center"></td>
-                <td class="text-center">Kg[cite: 21]</td>
-                <td></td><td></td><td></td>
+                <td class="text-center">Cái</td>
+                <td class="text-center"><b><span id="giao-thung-cai">...</span></b></td>
+                <td></td><td></td>
               </tr>
               <tr>
-                <td class="text-center">2</td>
-                <td>Men in[cite: 21]</td>
+                <td class="text-center">3</td>
+                <td>Màng PE/ Nylon</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center">Tờ</td>
+                <td class="text-center"><b><span id="giao-nylon-to">...</span></b></td>
+                <td></td><td></td>
+              </tr>
+              <tr>
+                <td class="text-center">4</td>
+                <td>Hộp/ Khay</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center">Cái</td>
+                <td class="text-center"><b><span id="giao-hop-cai">...</span></b></td>
+                <td></td><td></td>
+              </tr>
+              <tr>
+                <td class="text-center">5</td>
+                <td>Men in</td>
+                <td class="text-center"><span id="giao-dinhmuc-men">...</span></td>
                 <td class="text-center"><span id="giao-ms-men">...</span></td>
-                <td class="text-center">Kg[cite: 21]</td>
+                <td class="text-center">Kg</td>
                 <td class="text-center"><b><span id="giao-men-kg">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
                 <td class="text-center"></td>
-                <td>Men se vòng-Chấm[cite: 21]</td>
+                <td>Men Chấm</td>
+                <td class="text-center"></td>
                 <td class="text-center"><span id="giao-ms-men-sc">...</span></td>
-                <td class="text-center">Kg[cite: 21]</td>
+                <td class="text-center">Kg</td>
                 <td class="text-center"><b><span id="giao-sum-men">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
                 <td class="text-center"></td>
-                <td>Men (Dòng trống)[cite: 21]</td>
+                <td>Men se vòng</td>
                 <td class="text-center"></td>
-                <td class="text-center">Kg[cite: 21]</td>
+                <td class="text-center"></td>
+                <td class="text-center">Kg</td>
                 <td></td><td></td><td></td>
               </tr>
               <tr>
-                <td class="text-center">3</td>
-                <td>Dung môi[cite: 21]</td>
+                <td class="text-center">6</td>
+                <td>Dung môi</td>
+                <td class="text-center"><span id="giao-dinhmuc-dm">...</span></td>
                 <td class="text-center"><span id="giao-ms-dm">...</span></td>
-                <td class="text-center">Kg[cite: 21]</td>
+                <td class="text-center">Kg</td>
                 <td class="text-center"><b><span id="giao-dungmoi-kg">...</span></b></td>
                 <td></td><td></td>
               </tr>
               <tr>
+                <td class="text-center">7</td>
+                <td>Khuôn in</td>
                 <td class="text-center"></td>
-                <td>Dung môi (Dòng trống)[cite: 21]</td>
                 <td class="text-center"></td>
-                <td class="text-center">Kg[cite: 21]</td>
-                <td></td><td></td><td></td>
+                <td class="text-center">Cái</td>
+                <td class="text-center"><b><span id="giao-khuon-cai">...</span></b></td>
+                <td></td><td></td>
               </tr>
               <tr>
-                <td class="text-center">4</td>
-                <td>Thùng[cite: 21]</td>
+                <td class="text-center">8</td>
+                <td>Nhãn dán thùng</td>
                 <td class="text-center"></td>
-                <td class="text-center">Cái[cite: 21]</td>
-                <td class="text-center"><b><span id="giao-thung-cai">...</span></b></td>
+                <td class="text-center"></td>
+                <td class="text-center">Tờ</td>
+                <td class="text-center"><b><span id="giao-nhanin-to">...</span></b></td>
                 <td></td><td></td>
               </tr>
             </tbody>
           </table>
+          <div class="note-footer">Định mức tube, men, dung môi/100.000sp</div>
         </div>
         <div class="footer-info">
-          <div>M10/SX-SOP 01[cite: 21]</div>
-          <div>Lần sửa đổi: 00[cite: 21]</div>
-          <div>Trang 1/1[cite: 21]</div>
+          <div>M10/SX-SOP 01</div>
+          <div>Lần sửa đổi: 02</div>
+          <div>Trang 1/1</div>
         </div>
       </div>
 
@@ -493,10 +549,28 @@
     }
 
     function fillData() {
-      // Dữ liệu Phiếu Xuất
       if(getQueryParam('xuat_ngay')) document.getElementById('xuat-ngay').innerText = getQueryParam('xuat_ngay');
       if(getQueryParam('xuat_thang')) document.getElementById('xuat-thang').innerText = getQueryParam('xuat_thang');
       if(getQueryParam('xuat_nam')) document.getElementById('xuat-nam').innerText = getQueryParam('xuat_nam');
+      
+      const hsl = getQueryParam('hsl');
+      if(hsl) {
+        document.getElementById('xuat-hsl').innerText = hsl;
+        document.getElementById('giao-hsl').innerText = hsl;
+      }
+
+      const slDonhang = getQueryParam('sl_denhang');
+      if(slDonhang) {
+        document.getElementById('xuat-sl-denhang').innerText = slDonhang;
+        document.getElementById('giao-sl-denhang').innerText = slDonhang;
+      }
+
+      const thungVi = getQueryParam('thung_vi');
+      if(thungVi) {
+        document.getElementById('xuat-thung-vi').innerText = thungVi;
+        document.getElementById('giao-thung-vi').innerText = thungVi;
+      }
+
       if(getQueryParam('ms_tube')) {
         document.getElementById('xuat-ms-tube').innerText = getQueryParam('ms_tube');
         document.getElementById('giao-ms-tube').innerText = getQueryParam('ms_tube');
@@ -505,13 +579,24 @@
         document.getElementById('xuat-tube-kg').innerText = getQueryParam('tube_kg');
         document.getElementById('giao-tube-kg').innerText = getQueryParam('tube_kg');
       }
+      if(getQueryParam('dinhmuc_tube')) {
+        document.getElementById('xuat-dinhmuc-tube').innerText = getQueryParam('dinhmuc_tube');
+        document.getElementById('giao-dinhmuc-tube').innerText = getQueryParam('dinhmuc_tube');
+      }
+
       if(getQueryParam('thung_cai')) {
         document.getElementById('xuat-thung-cai').innerText = getQueryParam('thung_cai');
         document.getElementById('giao-thung-cai').innerText = getQueryParam('thung_cai');
       }
-      if(getQueryParam('nylon_to')) document.getElementById('xuat-nylon-to').innerText = getQueryParam('nylon_to');
-      if(getQueryParam('hop_cai')) document.getElementById('xuat-hop-cai').innerText = getQueryParam('hop_cai');
-      
+      if(getQueryParam('nylon_to')) {
+        document.getElementById('xuat-nylon-to').innerText = getQueryParam('nylon_to');
+        document.getElementById('giao-nylon-to').innerText = getQueryParam('nylon_to');
+      }
+      if(getQueryParam('hop_cai')) {
+        document.getElementById('xuat-hop-cai').innerText = getQueryParam('hop_cai');
+        document.getElementById('giao-hop-cai').innerText = getQueryParam('hop_cai');
+      }
+
       if(getQueryParam('ms_men')) {
         document.getElementById('xuat-ms-men').innerText = getQueryParam('ms_men');
         document.getElementById('giao-ms-men').innerText = getQueryParam('ms_men');
@@ -528,6 +613,10 @@
         document.getElementById('xuat-sum-men').innerText = getQueryParam('sum_men');
         document.getElementById('giao-sum-men').innerText = getQueryParam('sum_men');
       }
+      if(getQueryParam('dinhmuc_men')) {
+        document.getElementById('xuat-dinhmuc-men').innerText = getQueryParam('dinhmuc_men');
+        document.getElementById('giao-dinhmuc-men').innerText = getQueryParam('dinhmuc_men');
+      }
 
       if(getQueryParam('ms_dm')) {
         document.getElementById('xuat-ms-dm').innerText = getQueryParam('ms_dm');
@@ -537,12 +626,17 @@
         document.getElementById('xuat-dungmoi-kg').innerText = getQueryParam('dungmoi_kg');
         document.getElementById('giao-dungmoi-kg').innerText = getQueryParam('dungmoi_kg');
       }
+      if(getQueryParam('dinhmuc_dm')) {
+        document.getElementById('xuat-dinhmuc-dm').innerText = getQueryParam('dinhmuc_dm');
+        document.getElementById('giao-dinhmuc-dm').innerText = getQueryParam('dinhmuc_dm');
+      }
 
-      // Dữ liệu Phiếu Giao
       if(getQueryParam('giao_ngay')) document.getElementById('giao-ngay').innerText = getQueryParam('giao_ngay');
       if(getQueryParam('giao_thang')) document.getElementById('giao-thang').innerText = getQueryParam('giao_thang');
       if(getQueryParam('giao_nam')) document.getElementById('giao-nam').innerText = getQueryParam('giao_nam');
       if(getQueryParam('may')) document.getElementById('giao-may').innerText = getQueryParam('may');
+      if(getQueryParam('khuon_cai')) document.getElementById('giao-khuon-cai').innerText = getQueryParam('khuon_cai');
+      if(getQueryParam('nhanin_to')) document.getElementById('giao-nhanin-to').innerText = getQueryParam('nhanin_to');
     }
 
     function triggerPrint() { try { window.print(); } catch (e) { alert("Bấm Ctrl + P để in!"); } }
