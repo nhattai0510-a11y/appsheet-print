@@ -183,7 +183,7 @@
     }
     .data-table th, .data-table td {
       border: 0.5px solid var(--border-color);
-      padding: 8px 6px; /* Tăng khoảng đệm để mở rộng chiều cao dòng */
+      padding: 8px 6px; 
       vertical-align: middle;
       font-size: 7.5pt;
     }
@@ -294,7 +294,7 @@
               <td class="header-title">PHIẾU XUẤT NGUYÊN VẬT LIỆU</td>
             </tr>
           </table>
-          <div class="info-line"><br>
+          <div class="info-line">
             Ngày <span id="xuat-ngay">……………</span> tháng <span id="xuat-thang">……………</span> năm <span id="xuat-nam">……………</span>
           </div>
 
@@ -411,8 +411,8 @@
               <td class="header-title">PHIẾU GIAO NGUYÊN VẬT LIỆU CHO MÁY</td>
             </tr>
           </table>
-          <div class="info-line"><br>
-            Ngày <span id="giao-ngay">……………</span> tháng <span id="giao-thang">……………</span> năm <span id="giao-nam">……………</span><br><br> Máy: <b><span id="giao-may">……</span></b>
+          <div class="info-line">
+            Ngày <span id="giao-ngay">……………</span> tháng <span id="giao-thang">……………</span> năm <span id="giao-nam">……………</span><br> Máy: <b><span id="giao-may">……</span></b>
           </div>
 
           <table class="data-table">
@@ -549,28 +549,39 @@
     }
 
     function fillData() {
+      // Dữ liệu ngày tháng Phiếu Xuất
       if(getQueryParam('xuat_ngay')) document.getElementById('xuat-ngay').innerText = getQueryParam('xuat_ngay');
       if(getQueryParam('xuat_thang')) document.getElementById('xuat-thang').innerText = getQueryParam('xuat_thang');
       if(getQueryParam('xuat_nam')) document.getElementById('xuat-nam').innerText = getQueryParam('xuat_nam');
       
+      // HSL chung hoặc riêng
       const hsl = getQueryParam('hsl');
       if(hsl) {
         document.getElementById('xuat-hsl').innerText = hsl;
         document.getElementById('giao-hsl').innerText = hsl;
       }
+      if(getQueryParam('xuat_hsl')) document.getElementById('xuat-hsl').innerText = getQueryParam('xuat_hsl');
+      if(getQueryParam('giao_hsl')) document.getElementById('giao-hsl').innerText = getQueryParam('giao_hsl');
 
+      // Số lượng đơn hàng (Hồ sơ lô)
       const slDonhang = getQueryParam('sl_denhang');
       if(slDonhang) {
         document.getElementById('xuat-sl-denhang').innerText = slDonhang;
         document.getElementById('giao-sl-denhang').innerText = slDonhang;
       }
+      if(getQueryParam('xuat_sl_denhang')) document.getElementById('xuat-sl-denhang').innerText = getQueryParam('xuat_sl_denhang');
+      if(getQueryParam('giao_sl_denhang')) document.getElementById('giao-sl-denhang').innerText = getQueryParam('giao_sl_denhang');
 
+      // Số thùng/vỉ
       const thungVi = getQueryParam('thung_vi');
       if(thungVi) {
         document.getElementById('xuat-thung-vi').innerText = thungVi;
         document.getElementById('giao-thung-vi').innerText = thungVi;
       }
+      if(getQueryParam('xuat_thung_vi')) document.getElementById('xuat-thung-vi').innerText = getQueryParam('xuat_thung_vi');
+      if(getQueryParam('giao_thung_vi')) document.getElementById('giao-thung-vi').innerText = getQueryParam('giao_thung_vi');
 
+      // Tube
       if(getQueryParam('ms_tube')) {
         document.getElementById('xuat-ms-tube').innerText = getQueryParam('ms_tube');
         document.getElementById('giao-ms-tube').innerText = getQueryParam('ms_tube');
@@ -584,6 +595,7 @@
         document.getElementById('giao-dinhmuc-tube').innerText = getQueryParam('dinhmuc_tube');
       }
 
+      // Thùng, Nylon, Hộp
       if(getQueryParam('thung_cai')) {
         document.getElementById('xuat-thung-cai').innerText = getQueryParam('thung_cai');
         document.getElementById('giao-thung-cai').innerText = getQueryParam('thung_cai');
@@ -597,6 +609,7 @@
         document.getElementById('giao-hop-cai').innerText = getQueryParam('hop_cai');
       }
 
+      // Men
       if(getQueryParam('ms_men')) {
         document.getElementById('xuat-ms-men').innerText = getQueryParam('ms_men');
         document.getElementById('giao-ms-men').innerText = getQueryParam('ms_men');
@@ -618,6 +631,7 @@
         document.getElementById('giao-dinhmuc-men').innerText = getQueryParam('dinhmuc_men');
       }
 
+      // Dung môi
       if(getQueryParam('ms_dm')) {
         document.getElementById('xuat-ms-dm').innerText = getQueryParam('ms_dm');
         document.getElementById('giao-ms-dm').innerText = getQueryParam('ms_dm');
@@ -631,6 +645,7 @@
         document.getElementById('giao-dinhmuc-dm').innerText = getQueryParam('dinhmuc_dm');
       }
 
+      // Riêng Phiếu Giao
       if(getQueryParam('giao_ngay')) document.getElementById('giao-ngay').innerText = getQueryParam('giao_ngay');
       if(getQueryParam('giao_thang')) document.getElementById('giao-thang').innerText = getQueryParam('giao_thang');
       if(getQueryParam('giao_nam')) document.getElementById('giao-nam').innerText = getQueryParam('giao_nam');
