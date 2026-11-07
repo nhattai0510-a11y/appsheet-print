@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhãn lấy mẫu SANOFI - Nhãn Vàng (A5 Đứng)</title>
+  <style>
+    /* ==========================================
+       1. CORE SYSTEM & CANVAS STYLES (UI/UX)
+       ========================================== */
+    :root {
+      --bg-canvas: #f4f5f7;
+      --bg-page: #ffffff;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --border-color: #7c7a7a;
+      --text-main: #1f2937;
+      --toolbar-height: 56px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.3s ease;
+    }
+
+    /* Chế độ xem Tối (Dark Mode) cho nền ứng dụng */
+    body.dark-mode {
+      background-color: #1e1e2d;
+      color: #e0e0e0;
+    }
+
+    /* ================= THANH CÔNG CỤ (TOOLBAR) ================= */
+    .no-print {
+      background: #ffffff;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    body.dark-mode .no-print {
+      background: #2b2b40;
+      border-bottom-color: #3b3b54;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a202c;
+    }
+
+    body.dark-mode .toolbar-left {
+      color: #f7fafc;
+    }
+
+    .toolbar-left-icon {
+      font-size: 18px;
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Cụm Zoom */
+    .zoom-control {
+      display: flex;
+      align-items: center;
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 2px 6px;
+    }
+
+    body.dark-mode .zoom-control {
+      background: #3a3a52;
+    }
+
+    .btn-zoom {
+      background: transparent;
+      border: none;
+      padding: 6px 10px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #475569;
+      border-radius: 4px;
+    }
+
+    body.dark-mode .btn-zoom {
+      color: #cbd5e1;
+    }
+
+    .btn-zoom:hover {
+      background: #e2e8f0;
+    }
+
+    body.dark-mode .btn-zoom:hover {
+      background: #4a4a68;
+    }
+
+    .zoom-value {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0 8px;
+      min-width: 50px;
+      text-align: center;
+      color: #334155;
+    }
+
+    body.dark-mode .zoom-value {
+      color: #f1f5f9;
+    }
+
+    /* Nút Chế độ sáng/tối */
+    .btn-theme {
+      background: #f1f5f9;
+      border: none;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    body.dark-mode .btn-theme {
+      background: #3a3a52;
+      color: #f1f5f9;
+    }
+
+    .btn-theme:hover {
+      background: #e2e8f0;
+    }
+
+    body.dark-mode .btn-theme:hover {
+      background: #4a4a68;
+    }
+
+    /* Nút In */
+    .btn-print {
+      background: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      transition: background 0.2s;
+    }
+
+    .btn-print:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Document Canvas Container */
+    .document-container {
+      padding: 30px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      transform-origin: top center;
+      transition: transform 0.15s ease-out;
+    }
+
+    /* Canvas Page Frame (A5 Portrait Visual) */
+    .page-canvas {
+      width: 148mm;
+      height: 210mm;
+      background-color: var(--bg-page);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+      padding: 6mm 8mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      font-family: "Times New Roman", Times, serif;
+      font-size: 9.5pt;
+      line-height: 1.25;
+      color: #000000;
+      box-sizing: border-box;
+    }
+
+    /* ==========================================
+       2. CONTENT STRUCTURES
+       ========================================== */
+    table.main-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 3px;
+      table-layout: fixed;
+    }
+
+    table.main-table td {
+      border: 0.5px solid var(--border-color);
+      padding: 4px 6px;
+      vertical-align: middle;
+      word-wrap: break-word;
+    }
+
+    .header-logo {
+      width: 20%;
+      text-align: center;
+    }
+
+    .header-logo img {
+      max-height: 42px;
+      width: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .header-company {
+      width: 80%;
+      font-size: 8.5pt;
+      text-align: center;
+    }
+
+    .text-center { text-align: center; }
+    .text-bold { font-weight: bold; }
+    .text-uppercase { text-transform: uppercase; }
+
+    .footer-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8.5pt;
+      padding: 3px 2px 0 2px;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    .grid-stamps {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      table-layout: fixed;
+    }
+
+    .grid-stamps td {
+      width: 33.33%;
+      padding: 6px 6px;
+      vertical-align: middle;
+      height: 80px;
+      font-size: 10.5pt;
+      text-align: center;
+      border: 4px double var(--border-color) !important;
+    }
+
+    .note-box {
+      margin-top: 10px;
+      font-size: 9pt;
+      line-height: 1.3;
+      border: 0.5px dashed #8f8e8e;
+      padding: 6px 10px;
+      background-color: #fdfdfd;
+    }
+
+    /* ==========================================
+       3. OPTIMIZED PRINT ENGINE
+       ========================================== */
+    @media print {
+      @page {
+        size: A5 portrait;
+        margin: 0;
+      }
+
+      html, body {
+        background-color: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .document-container {
+        padding: 0 !important;
+        gap: 0 !important;
+        display: block !important;
+        transform: none !important;
+      }
+
+      .page-canvas {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        width: 148mm !important;
+        height: 210mm !important;
+        max-height: 210mm !important;
+        padding: 5mm 8mm !important;
+        margin: 0 auto !important;
+        page-break-after: always;
+        break-after: page;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR TOOLBAR -->
+  <header class="no-print">
+    <div class="toolbar-left">
+      <span class="toolbar-left-icon">📄</span>
+      <span>Xem trước bản in (Nhãn Vàng - A5)</span>
+    </div>
+    <div class="toolbar-right">
+      <div class="zoom-control">
+        <button class="btn-zoom" onclick="changeZoom(-10)">-</button>
+        <span class="zoom-value" id="zoom-text">100%</span>
+        <button class="btn-zoom" onclick="changeZoom(10)">+</button>
+      </div>
+      <button class="btn-theme" onclick="toggleTheme()">
+        🌙 / ☀️ Chế độ
+      </button>
+      <button class="btn-print" onclick="triggerPrint()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        In Nhãn / Xuất PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- CANVAS WORKSPACE -->
+  <main class="document-container" id="document-container">
+    <article class="page-canvas">
+      <div>
+        <table class="main-table">
+          <tr>
+            <td class="header-logo">
+              <img src="logo.png" alt="LOGO" onerror="this.src='https://via.placeholder.com/80x40?text=LOGO'">
+            </td>
+            <td class="header-company">
+              <b style="font-size: 10pt; text-decoration: underline;">CÔNG TY CỔ PHẦN THỦY TINH HƯNG PHÚ</b><br>
+              Trụ sở chính: 84-Phạm Thế Hiển, phường Chánh Hưng, TP. Hồ Chí Minh<br>
+              CN: Lô L03-Đường số 1, KCN Long Hậu, xã Cần Giuộc, tỉnh Tây Ninh
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" class="text-center text-bold text-uppercase" style="font-size: 11pt; background: #eee; padding: 5px;">
+              SẢN PHẨM LẤY MẪU
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 28%;">Tên sản phẩm:</td>
+            <td><b id="val-ten-sp">...</b> &nbsp;&nbsp;&nbsp;&nbsp; <b id="val-dung-tich">...</b> ml</td>
+          </tr>
+          <tr>
+            <td>Order:</td>
+            <td><b id="val-so-lo">...</b></td>
+          </tr>
+          <tr>
+            <td>Số hồ sơ lô:</td>
+            <td><b id="val-so-hsl">...</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gồm có……….cỡ số</td>
+          </tr>
+          <tr>
+            <td>Số lượng:</td>
+            <td><b>3 Hộp</b></td>
+          </tr>
+          <tr>
+            <td>Nơi sản xuất:</td>
+            <td><b>Long Hậu</b></td>
+          </tr>
+          <tr>
+            <td colspan="2" style="font-size: 9.5pt; text-align: center; padding: 6px 8px;">
+              <b style="font-size: 10pt;">MẪU KIỂM LÔ BÌNH THƯỜNG CHO SANOFI</b>
+              <span style="float: right;"><span id="val-stt">...</span></span>
+            </td>
+          </tr>
+        </table>
+
+        <div class="footer-info">
+          <div>M04/QA-SOP 26</div>
+          <div>Lần sửa đổi: 00</div>
+          <div>Trang 1/1</div>
+        </div>
+
+        <table class="grid-stamps">
+          <tr>
+            <td><b>ĐÃ LẤY MẪU</b><br>Ngày: <span class="val-ngay-lay-mau">...</span><br>Người lấy mẫu: <span class="val-nv-dbcl">...</span></td>
+            <td><b>ĐÃ LẤY MẪU</b><br>Ngày: <span class="val-ngay-lay-mau">...</span><br>Người lấy mẫu: <span class="val-nv-dbcl">...</span></td>
+            <td><b>ĐÃ LẤY MẪU</b><br>Ngày: <span class="val-ngay-lay-mau">...</span><br>Người lấy mẫu: <span class="val-nv-dbcl">...</span></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="note-box">
+        <b>Nhãn:</b> Vàng, &nbsp;&nbsp; <b>Nylon:</b> Vàng, &nbsp;&nbsp; <b>Dây rút:</b> Đen; &nbsp;&nbsp; <b>Se 2 vòng cọng:</b> Vàng
+      </div>
+    </article>
+  </main>
+
+  <script>
+    // Logic Thu / Phóng Zoom
+    let currentZoom = 100;
+    function changeZoom(delta) {
+      currentZoom += delta;
+      if (currentZoom < 50) currentZoom = 50;
+      if (currentZoom > 200) currentZoom = 200;
+      
+      document.getElementById('zoom-text').innerText = currentZoom + '%';
+      document.getElementById('document-container').style.transform = `scale(${currentZoom / 100})`;
+    }
+
+    // Logic Chuyển Chế độ Sáng / Tối
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      for (let [key, value] of urlParams.entries()) {
+        if (key.toLowerCase() === param.toLowerCase()) {
+          try { return decodeURIComponent(value) || '...'; } catch(e) { return value || '...'; }
+        }
+      }
+      return '...';
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr === '...') return '...';
+      const parts = dateStr.split('/');
+      if (parts.length === 3) return `${parts[1].padStart(2, '0')}/${parts[0].padStart(2, '0')}/${parts[2]}`;
+      return dateStr;
+    }
+
+    function fillData() {
+      const tenSp = getQueryParam('ten_sp');
+      const dungTich = getQueryParam('dung_tich');
+      const soLo = getQueryParam('so_lo');
+      const soHsl = getQueryParam('so_hsl');
+      const stt = getQueryParam('stt');
+      const ngayLayMau = formatDate(getQueryParam('ngay_lay_mau'));
+      const nvDbcl = getQueryParam('nv_dbcl');
+
+      if(document.getElementById('val-ten-sp')) document.getElementById('val-ten-sp').innerText = tenSp;
+      if(document.getElementById('val-dung-tich')) document.getElementById('val-dung-tich').innerText = dungTich;
+      if(document.getElementById('val-so-lo')) document.getElementById('val-so-lo').innerText = soLo;
+      if(document.getElementById('val-so-hsl')) document.getElementById('val-so-hsl').innerText = soHsl;
+      if(document.getElementById('val-stt')) document.getElementById('val-stt').innerText = stt;
+
+      document.querySelectorAll('.val-ngay-lay-mau').forEach(el => el.innerText = ngayLayMau);
+      document.querySelectorAll('.val-nv-dbcl').forEach(el => el.innerText = nvDbcl);
+    }
+
+    function triggerPrint() { try { window.print(); } catch (e) { alert("Bấm Ctrl + P để in!"); } }
+    window.addEventListener('DOMContentLoaded', fillData);
+  </script>
+</body>
+</html>
