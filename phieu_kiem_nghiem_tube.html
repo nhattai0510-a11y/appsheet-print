@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phiếu Kiểm Tra & Sổ Tay Kiểm Nghiệm Tube - Hưng Phú</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Times New Roman", Times, serif;
+      background-color: #e9ecef;
+      color: #000;
+      font-size: 11pt;
+      line-height: 1.35;
+    }
+
+    /* Toolbar UI */
+    .toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .toolbar-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn-print {
+      background: #2563eb;
+      color: #fff;
+    }
+    .btn-print:hover {
+      background: #1d4ed8;
+    }
+
+    /* Page Container */
+    .pages-wrapper {
+      margin-top: 64px;
+      margin-bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .a4-page {
+      width: 210mm;
+      min-height: 297mm;
+      background: #fff;
+      padding: 12mm 15mm 12mm 18mm;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    td, th {
+      border: 1px solid #000;
+      padding: 4px 6px;
+      vertical-align: middle;
+    }
+
+    /* Header Block */
+    .header-table td {
+      border: 1px solid #000;
+      padding: 6px 8px;
+    }
+    .logo-cell {
+      width: 110px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .logo-cell img {
+      max-width: 85px;
+      max-height: 75px;
+      object-fit: contain;
+    }
+    .title-cell {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .doc-title {
+      font-size: 14pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 0;
+    }
+
+    /* Section Headings */
+    .section-title {
+      font-weight: bold;
+      font-size: 11.5pt;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .info-list {
+      margin-left: 6px;
+      margin-bottom: 6px;
+    }
+    .info-list p {
+      margin-bottom: 3px;
+    }
+
+    /* Main Inspection Table */
+    .data-table th {
+      text-align: center;
+      font-weight: bold;
+      background-color: #f8fafc;
+      padding: 5px 4px;
+    }
+    .text-center { text-align: center; }
+    .font-bold { font-weight: bold; }
+
+    /* Signature & Footer */
+    .signature-table td {
+      border: none;
+      text-align: center;
+      vertical-align: top;
+      padding-top: 8px;
+    }
+    .sig-space {
+      height: 55px;
+    }
+
+    .footer-code-table td {
+      border-top: 1px solid #000;
+      border-bottom: none;
+      border-left: none;
+      border-right: none;
+      font-size: 9.5pt;
+      padding-top: 4px;
+    }
+
+    /* Page 2 specific */
+    .notebook-meta {
+      font-style: italic;
+      margin: 6px 0;
+    }
+    .notebook-meta p {
+      margin-bottom: 2px;
+    }
+
+    .notebook-table th, .notebook-table td {
+      padding: 5px 4px;
+      font-size: 10.5pt;
+    }
+
+    .measure-grid td {
+      height: 24px;
+      width: 10%;
+      text-align: center;
+    }
+
+    .checkbox-symbol {
+      font-size: 13pt;
+      line-height: 1;
+    }
+
+    @media print {
+      body {
+        background: none;
+      }
+      .toolbar {
+        display: none !important;
+      }
+      .pages-wrapper {
+        margin: 0;
+        gap: 0;
+      }
+      .a4-page {
+        box-shadow: none;
+        margin: 0;
+        page-break-after: always;
+        break-after: page;
+        height: 297mm;
+      }
+      .a4-page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-title">HƯNG PHÚ - PHIẾU KIỂM TRA & SỔ TAY KIỂM NGHIỆM TUBE NGUYÊN LIỆU</div>
+    <div class="toolbar-actions">
+      <button class="btn btn-print" onclick="window.print()">🖨️ In Phiếu / Xuất PDF (2 Trang A4)</button>
+    </div>
+  </div>
+
+  <div class="pages-wrapper">
+
+    <!-- ==================== TRANG 1: PHIẾU KIỂM TRA VÀ KIỂM NGHIỆM ==================== -->
+    <div class="a4-page">
+      <div>
+        <!-- Header -->
+        <table class="header-table">
+          <tr>
+            <td class="logo-cell">
+              <img src="logo.png" alt="Logo Hưng Phú" onerror="this.style.display='none'">
+            </td>
+            <td class="title-cell">
+              <div class="doc-title">PHIẾU KIỂM TRA VÀ KIỂM NGHIỆM TUBE NGUYÊN LIỆU</div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Số phiếu ngoài khung -->
+        <div style="font-weight: bold; margin: 8px 0 4px 0;">Số: <span id="p1-stt"></span>-<span id="p1-year"></span>/CL</div>
+
+        <!-- I. Mô tả -->
+        <div class="section-title">I. Mô tả:</div>
+        <div class="info-list">
+          <p>- Tube thủy tinh trung tính màu <span id="p1-mau" class="font-bold"></span>, đường kính: <span id="p1-loai-tube" class="font-bold"></span> mm. Mã số tube: <span id="p1-ma-tube" class="font-bold"></span></p>
+          <p>- Hợp đồng số: <span id="p1-so-hd"></span>. Ngày: <span id="p1-ngay-hd"></span>. Ngày nhập kho: <span id="p1-ngay-nhap"></span></p>
+          <p>- Nhà cung ứng: <span id="p1-ncc"></span>. Nước sản xuất: <span id="p1-nuoc-sx"></span></p>
+          <p>- Số lượng mẫu kiểm tra: 315 cây</p>
+          <p>- Thực hiện theo tiêu chuẩn và hướng dẫn kiểm tra tube nguyên liệu (QA-SOP 22)</p>
+        </div>
+
+        <!-- II. Kiểm tra -->
+        <div class="section-title">II. Kiểm tra:</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 36px;">STT</th>
+              <th style="width: 135px;">Tiêu chí kiểm tra</th>
+              <th style="width: 245px;">Tiêu chuẩn</th>
+              <th style="width: 120px;">Kết quả kiểm tra</th>
+              <th style="width: 68px;">Kết luận</th>
+              <th>Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-center">1</td>
+              <td>Hình thức</td>
+              <td style="font-size: 9.8pt; line-height: 1.28;">
+                - Thông tin lô: Bao bì còn nguyên vẹn, không bị rách, bể.<br>
+                - Ngoại quan: Tube phải trong suốt không có bụi bẩn khi nhìn ngang qua, thân tube không được có vân lớn dễ nhận ra và sờ có cảm giác.<br>
+                - Số sọc trên mỗi ống tối đa là: 2 sọc đối với loại sọc ngắn hơn 30cm, 1 sọc đối với loại sọc dài hơn 50cm.<br>
+                - Đối với tube trắng: khi gia công sản phẩm phải trắng, không có vết đen tụ ở đáy.<br>
+                - Độ sạch: Phía trong và ngoài thành tube phải sạch, tuyệt đối không có vật lạ, mảnh thủy tinh, côn trùng và dầu bám trên tube.
+              </td>
+              <td class="text-center">Đạt</td>
+              <td class="text-center">Đạt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="text-center">2</td>
+              <td>Đường kính tube</td>
+              <td class="text-center"><span id="p1-dk-ngoai"></span> mm</td>
+              <td class="text-center"><span id="p1-maxmin-dk"></span> mm</td>
+              <td class="text-center">Đạt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="text-center">3</td>
+              <td>Độ dày thành tube</td>
+              <td class="text-center"><span id="p1-do-day"></span> mm</td>
+              <td class="text-center"><span id="p1-maxmin-dd"></span> mm</td>
+              <td class="text-center">Đạt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="text-center">4</td>
+              <td>Chiều dài cây tube</td>
+              <td class="text-center"><span id="p1-chieu-dai"></span> mm</td>
+              <td class="text-center"><span id="p1-maxmin-cd"></span> mm</td>
+              <td class="text-center">Đạt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="text-center" rowspan="2">5</td>
+              <td rowspan="2">Độ trung tính<br><span style="font-size: 9.5pt;">(độ bền đối với nước trên bề mặt thủy tinh)</span></td>
+              <td rowspan="2" class="text-center">
+                Bảng giới hạn 3.2.1-3 theo BP 2019.<br>
+                (V<sub>HCl 0,01M</sub> &le; <span id="p1-v"></span> ml)
+              </td>
+              <td class="text-center">V<sub>HCl 0,01M</sub> = <span id="p1-m0"></span> ml</td>
+              <td class="text-center">Đạt</td>
+              <td class="text-center">Không in</td>
+            </tr>
+            <tr>
+              <td class="text-center">V<sub>HCl 0,01M</sub> = <span id="p1-do-trung-tinh"></span> ml</td>
+              <td class="text-center">Đạt</td>
+              <td style="font-size: 9.5pt; line-height: 1.25;">
+                - <span id="p1-m"></span><br>
+                - T<sup>o</sup>: 620<sup>o</sup>C<br>
+                - Máy: <span id="p1-m1"></span>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center">6</td>
+              <td>Phân biệt thủy tinh cấp I và cấp II</td>
+              <td class="text-center">Bảng giới hạn 3.2.1-4 theo BP 2019</td>
+              <td class="text-center">Thủy tinh cấp I</td>
+              <td class="text-center">Đạt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="text-center">7</td>
+              <td>Giới hạn Arsen</td>
+              <td class="text-center">Không quá 0,1 ppm As<br>(Theo COA nhà cung cấp)</td>
+              <td class="text-center">Đạt</td>
+              <td class="text-center">Đạt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="text-center">8</td>
+              <td>Độ truyền ánh sáng</td>
+              <td class="text-center">Không quá 10%</td>
+              <td class="text-center">Đạt</td>
+              <td class="text-center">Đạt</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- III. Kết luận & IV. Biện pháp xử lý -->
+        <div class="section-title" style="margin-top: 10px;">
+          III. Kết luận: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <span class="checkbox-symbol" id="chk-dat">&#9744;</span> ĐẠT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <span class="checkbox-symbol" id="chk-khong-dat">&#9744;</span> KHÔNG ĐẠT
+        </div>
+        <div class="section-title">
+          IV. Biện pháp xử lý: <span id="p1-bien-phap" style="font-weight: normal;">.....................................................................................................................</span>
+        </div>
+
+        <!-- Chữ ký -->
+        <table class="signature-table" style="margin-top: 6px;">
+          <tr>
+            <td style="width: 50%;">
+              <div style="visibility: hidden;">Ngày ..... tháng ..... năm .....</div>
+              <div class="font-bold">KIỂM NGHIỆM VIÊN</div>
+              <div class="sig-space"></div>
+              <div class="font-bold" id="p1-ten-knv"></div>
+            </td>
+            <td style="width: 50%;">
+              <div style="font-style: italic;">Ngày <span id="p1-ngay-ky">.....</span> tháng <span id="p1-thang-ky">.....</span> năm <span id="p1-nam-ky">.....</span></div>
+              <div class="font-bold">TP. ĐẢM BẢO CHẤT LƯỢNG</div>
+              <div class="sig-space"></div>
+              <div class="font-bold">Nguyễn Thị Bích Tuyền</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Footer Page 1 -->
+      <table class="footer-code-table">
+        <tr>
+          <td style="width: 34%; text-align: left;">M01/QA-SOP 22</td>
+          <td style="width: 33%; text-align: center;">Lần sửa đổi: 01</td>
+          <td style="width: 33%; text-align: right;">Trang 1/1</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ==================== TRANG 2: SỔ TAY KIỂM NGHIỆM VIÊN ==================== -->
+    <div class="a4-page">
+      <div>
+        <!-- Header -->
+        <table class="header-table">
+          <tr>
+            <td class="logo-cell">
+              <img src="logo.png" alt="Logo Hưng Phú" onerror="this.style.display='none'">
+            </td>
+            <td class="title-cell">
+              <div class="doc-title">SỔ TAY KIỂM NGHIỆM VIÊN</div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Số phiếu ngoài khung -->
+        <div style="font-weight: bold; margin: 8px 0 4px 0;">Số: <span id="p2-stt"></span>-<span id="p2-year"></span>/CL</div>
+
+        <!-- Phương pháp thử -->
+        <div class="notebook-meta">
+          <p>* Phương pháp thử: theo QA-SOP 20</p>
+          <p>* Đóng nước cất đến vai ống (đối với chai đóng 90% thể tích tràn đầy)</p>
+          <p>* Định lượng với dung dịch HCl 0,01M</p>
+        </div>
+
+        <!-- A. Kiểm tra độ trung tính -->
+        <div class="section-title">
+          A. Kiểm tra độ trung tính: <span style="font-weight: normal;">Đường kính tube: <span id="p2-loai-tube" class="font-bold"></span> mm – Mã số tube: <span id="p2-ma-tube" class="font-bold"></span></span>
+        </div>
+        <p style="margin-bottom: 6px;">Ống: <span id="p2-m" class="font-bold"></span>, số lượng: <span id="p2-m2" class="font-bold"></span> ống/mẫu</p>
+
+        <table class="notebook-table text-center">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width: 65px;">Kết quả</th>
+              <th colspan="2">Không hấp</th>
+              <th colspan="2">Hấp<br><span style="font-weight: normal; font-size: 9.5pt;">Máy: <span id="p2-m1-a"></span>; t<sup>o</sup> = 620<sup>o</sup>C</span></th>
+              <th colspan="2">Phân biệt thủy tinh cấp I và cấp II<br><span style="font-weight: normal; font-size: 9.5pt;">Hấp máy: <span id="p2-m1-b"></span>; t<sup>o</sup> = 620<sup>o</sup>C</span></th>
+            </tr>
+            <tr>
+              <th style="width: 13%;">B<sub>1</sub> (ml)</th>
+              <th style="width: 13%;">B<sub>2</sub> (ml)</th>
+              <th style="width: 16%;">B<sub>2</sub> (ml)</th>
+              <th style="width: 16%;">B<sub>1</sub> (ml)</th>
+              <th style="width: 16%;">B<sub>1</sub> (ml)</th>
+              <th style="width: 16%;">B<sub>2</sub> (ml)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="height: 32px;">
+              <td class="font-bold">50 ml</td>
+              <td id="p2-kh-b1"></td>
+              <td id="p2-kh-b2"></td>
+              <td id="p2-hap-b2"></td>
+              <td id="p2-hap-b1"></td>
+              <td id="p2-pb-b1"></td>
+              <td id="p2-pb-b2"></td>
+            </tr>
+            <tr style="height: 32px;">
+              <td class="font-bold">100 ml</td>
+              <td colspan="2">&lt; <span id="p2-v1"></span> ml</td>
+              <td colspan="2">&lt; <span id="p2-v2"></span> ml</td>
+              <td colspan="2">&lt; <span id="p2-v3"></span> ml</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- B. Kiểm tra kích thước -->
+        <div class="section-title" style="margin-top: 14px;">B. Kiểm tra kích thước:</div>
+
+        <p style="margin: 6px 0 4px 0;">1. Đường kính: <span id="p2-dk-ngoai" class="font-bold"></span> (mm). Số lượng mẫu kiểm tra: 10 (cây tube)</p>
+        <table class="measure-grid" id="grid-dk">
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </table>
+
+        <p style="margin: 8px 0 4px 0;">2. Độ dày: <span id="p2-do-day" class="font-bold"></span> (mm). Số lượng mẫu kiểm tra: 10 (cây tube)</p>
+        <table class="measure-grid" id="grid-dd">
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </table>
+
+        <p style="margin: 8px 0 4px 0;">3. Chiều dài: <span id="p2-chieu-dai" class="font-bold"></span> (mm). Số lượng mẫu kiểm tra: 10 (cây tube)</p>
+        <table class="measure-grid" id="grid-cd">
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </table>
+
+        <!-- C. Kết luận -->
+        <div class="section-title" style="margin-top: 14px;">C. Kết luận:</div>
+        <table class="notebook-table text-center">
+          <thead>
+            <tr>
+              <th style="width: 140px;"></th>
+              <th>Độ trung tính</th>
+              <th>Kích thước</th>
+              <th>Thủy tinh cấp I</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="height: 30px;">
+              <td class="font-bold">Đạt</td>
+              <td><span class="checkbox-symbol" id="p2-chk-dtt-dat">&#9744;</span></td>
+              <td><span class="checkbox-symbol" id="p2-chk-kt-dat">&#9744;</span></td>
+              <td><span class="checkbox-symbol" id="p2-chk-tt1-dat">&#9744;</span></td>
+            </tr>
+            <tr style="height: 30px;">
+              <td class="font-bold">Không đạt</td>
+              <td><span class="checkbox-symbol" id="p2-chk-dtt-kdat">&#9744;</span></td>
+              <td><span class="checkbox-symbol" id="p2-chk-kt-kdat">&#9744;</span></td>
+              <td><span class="checkbox-symbol" id="p2-chk-tt1-kdat">&#9744;</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Chữ ký Trang 2 -->
+        <table class="signature-table" style="margin-top: 14px;">
+          <tr>
+            <td style="width: 50%;">
+              <div style="visibility: hidden;">Ngày ..... tháng ..... năm .....</div>
+              <div class="font-bold">KIỂM NGHIỆM VIÊN</div>
+              <div class="sig-space"></div>
+              <div class="font-bold" id="p2-ten-knv"></div>
+            </td>
+            <td style="width: 50%;">
+              <div style="font-style: italic;">Ngày <span id="p2-ngay-ky">.....</span> tháng <span id="p2-thang-ky">.....</span> năm <span id="p2-nam-ky">.....</span></div>
+              <div class="font-bold">TP. ĐẢM BẢO CHẤT LƯỢNG</div>
+              <div class="sig-space"></div>
+              <div class="font-bold">Nguyễn Thị Bích Tuyền</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Footer Page 2 -->
+      <table class="footer-code-table">
+        <tr>
+          <td style="width: 34%; text-align: left;">M04/QA-SOP 22</td>
+          <td style="width: 33%; text-align: center;">Lần sửa đổi: 00</td>
+          <td style="width: 33%; text-align: right;">Trang 1/1</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    function getParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name) || '';
+    }
+
+    function setText(id, val) {
+      const el = document.getElementById(id);
+      if (el && val !== '') {
+        el.innerText = val;
+      }
+    }
+
+    // Xử lý tách danh sách các giá trị đo (hỗ trợ cả dấu phẩy hoặc dấu chấm phẩy)
+    function parseListValues(rawStr) {
+      if (!rawStr) return [];
+      // AppSheet EnumList mặc định ngăn cách bằng " , "
+      return rawStr.split(',').map(item => item.trim()).filter(item => item !== '');
+    }
+
+    // Đổ dữ liệu vào 10 ô bảng lưới Trang 2 và tự động tính Min - Max cho Trang 1 nếu cần
+    function processMeasurement(paramListName, fallbackMaxMinParam, gridId, p1TargetId) {
+      const rawList = getParam(paramListName);
+      const fallbackMaxMin = getParam(fallbackMaxMinParam);
+      const items = parseListValues(rawList);
+
+      if (items.length > 0) {
+        // 1. Điền vào 10 ô bảng lưới ở Trang 2
+        const cells = document.querySelectorAll(`#${gridId} td`);
+        cells.forEach((cell, idx) => {
+          if (items[idx] !== undefined) {
+            cell.innerText = items[idx];
+          }
+        });
+
+        // 2. Nếu AppSheet chưa truyền sẵn Max_min, tự động tìm Min - Max từ 10 mẫu đo để điền vào Trang 1
+        if (!fallbackMaxMin) {
+          // Chuyển dấu phẩy thập phân (nếu có) sang dấu chấm để tính toán số học chính xác
+          const numericPairs = items.map(str => ({
+            raw: str,
+            num: parseFloat(str.replace(',', '.'))
+          })).filter(obj => !isNaN(obj.num));
+
+          if (numericPairs.length > 0) {
+            let minObj = numericPairs[0];
+            let maxObj = numericPairs[0];
+            numericPairs.forEach(obj => {
+              if (obj.num < minObj.num) minObj = obj;
+              if (obj.num > maxObj.num) maxObj = obj;
+            });
+            const computedRange = (minObj.num === maxObj.num)
+              ? `${minObj.raw}`
+              : `${minObj.raw} - ${maxObj.raw}`;
+            setText(p1TargetId, computedRange);
+            return;
+          }
+        }
+      }
+
+      // Ưu tiên hiển thị giá trị Max_min từ AppSheet nếu đã tính sẵn
+      if (fallbackMaxMin) {
+        setText(p1TargetId, fallbackMaxMin);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Số phiếu & Năm
+      const stt = getParam('stt');
+      const year = getParam('year');
+      setText('p1-stt', stt);
+      setText('p1-year', year);
+      setText('p2-stt', stt);
+      setText('p2-year', year);
+
+      // Thông tin mô tả Tube
+      const mau = getParam('mau');
+      const loaiTube = getParam('loai_tube');
+      const maTube = getParam('ma_tube');
+      setText('p1-mau', mau);
+      setText('p1-loai-tube', loaiTube);
+      setText('p1-ma-tube', maTube);
+      setText('p2-loai-tube', loaiTube);
+      setText('p2-ma-tube', maTube);
+
+      // Hợp đồng & Nhà cung ứng
+      setText('p1-so-hd', getParam('so_hd'));
+      setText('p1-ngay-hd', getParam('ngay_hd'));
+      setText('p1-ngay-nhap', getParam('ngay_nhap'));
+      setText('p1-ncc', getParam('ncc'));
+      setText('p1-nuoc-sx', getParam('nuoc_sx'));
+
+      // Tiêu chuẩn kích thước (Trang 1 & Trang 2)
+      const dkNgoai = getParam('dk_ngoai');
+      const doDay = getParam('do_day');
+      const chieuDai = getParam('chieu_dai');
+      setText('p1-dk-ngoai', dkNgoai);
+      setText('p2-dk-ngoai', dkNgoai);
+
+      setText('p1-do-day', doDay);
+      setText('p2-do-day', doDay);
+
+      setText('p1-chieu-dai', chieuDai);
+      setText('p2-chieu-dai', chieuDai);
+
+      // Xử lý 10 mẫu đo & Kết quả Max-Min cho 3 chỉ tiêu: Đường kính, Độ dày, Chiều dài
+      processMeasurement('ds_dk', 'maxmin_dk', 'grid-dk', 'p1-maxmin-dk');
+      processMeasurement('ds_dd', 'maxmin_dd', 'grid-dd', 'p1-maxmin-dd');
+      processMeasurement('ds_cd', 'maxmin_cd', 'grid-cd', 'p1-maxmin-cd');
+
+      // Độ trung tính & Thông số hấp
+      const vVal = getParam('v');
+      const mVal = getParam('m');
+      const m1Val = getParam('m1');
+      setText('p1-v', vVal);
+      setText('p2-v1', vVal);
+      setText('p2-v2', vVal);
+      setText('p2-v3', vVal);
+
+      setText('p1-m0', getParam('m0'));
+      setText('p1-do-trung-tinh', getParam('do_trung_tinh'));
+
+      setText('p1-m', mVal);
+      setText('p2-m', mVal);
+      setText('p1-m1', m1Val);
+      setText('p2-m1-a', m1Val);
+      setText('p2-m1-b', m1Val);
+      setText('p2-m2', getParam('m2'));
+
+      // Các giá trị B1, B2 ở bảng độ trung tính Trang 2 (nếu có truyền từ AppSheet)
+      setText('p2-kh-b1', getParam('kh_b1'));
+      setText('p2-kh-b2', getParam('kh_b2'));
+      setText('p2-hap-b2', getParam('hap_b2'));
+      setText('p2-hap-b1', getParam('hap_b1'));
+      setText('p2-pb-b1', getParam('pb_b1'));
+      setText('p2-pb-b2', getParam('pb_b2'));
+
+      // Kết luận (Tự động tích cả Trang 1 và Trang 2 nếu ket_luan = DAT hoặc KHONG DAT)
+      const ketLuan = getParam('ket_luan').toUpperCase();
+      if (ketLuan === 'DAT' || ketLuan === 'ĐẠT') {
+        document.getElementById('chk-dat').innerHTML = '&#9745;';
+        document.getElementById('p2-chk-dtt-dat').innerHTML = '&#9745;';
+        document.getElementById('p2-chk-kt-dat').innerHTML = '&#9745;';
+        document.getElementById('p2-chk-tt1-dat').innerHTML = '&#9745;';
+      } else if (ketLuan === 'KHONG DAT' || ketLuan === 'KHÔNG ĐẠT') {
+        document.getElementById('chk-khong-dat').innerHTML = '&#9745;';
+        document.getElementById('p2-chk-dtt-kdat').innerHTML = '&#9745;';
+        document.getElementById('p2-chk-kt-kdat').innerHTML = '&#9745;';
+        document.getElementById('p2-chk-tt1-kdat').innerHTML = '&#9745;';
+      }
+
+      // Biện pháp xử lý
+      const bienPhap = getParam('bien_phap');
+      if (bienPhap) {
+        setText('p1-bien-phap', bienPhap);
+      }
+
+      // Kiểm nghiệm viên & Ngày ký
+      const tenKnv = getParam('ten');
+      setText('p1-ten-knv', tenKnv);
+      setText('p2-ten-knv', tenKnv);
+
+      const ngayKy = getParam('ngay_ky');
+      const thangKy = getParam('thang_ky');
+      const namKy = getParam('nam_ky');
+      if (ngayKy) { setText('p1-ngay-ky', ngayKy); setText('p2-ngay-ky', ngayKy); }
+      if (thangKy) { setText('p1-thang-ky', thangKy); setText('p2-thang-ky', thangKy); }
+      if (namKy) { setText('p1-nam-ky', namKy); setText('p2-nam-ky', namKy); }
+    });
+  </script>
+</body>
+</html>
